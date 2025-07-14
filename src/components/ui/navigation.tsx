@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Link from "next/link";
 import { ThemeToggle, useThemeStore } from "../ThemeToggle";
 import { AnimatedBackground } from "../motion-primitives/animated-background";
+import Logo from "../logo";
 
 const Navigation = () => {
   const { theme } = useThemeStore();
@@ -105,7 +106,8 @@ const Navigation = () => {
           }`}
         >
           <div className="flex items-center gap-2">
-            <Command
+            <Logo />
+            {/* <Command
               className={`w-5 h-5 ${isDark ? "text-primary" : "text-primary"}`}
               strokeWidth={1}
             />
@@ -115,7 +117,7 @@ const Navigation = () => {
               }`}
             >
               CryptoTrade
-            </span>
+            </span> */}
           </div>
 
           {/* Desktop Navigation */}
