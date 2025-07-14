@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../components/ThemeToggle";
+import TiltedCard from "@/components/TiltedCard";
 
 export default function Hero() {
   const { theme } = useThemeStore();
@@ -119,7 +120,7 @@ export default function Hero() {
           </div>
         </motion.div>
         <motion.div
-          className="relative"
+          className="relative h-[800px]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
@@ -131,8 +132,28 @@ export default function Hero() {
               className="absolute left-1/2 top-0 -z-10 mx-auto -translate-x-1/2 px-4 opacity-80"
             />
           </div>
+
+          <div className="hidden lg:block relative z-10 mx-auto max-w-5xl h-full rounded-lg ">
+            <TiltedCard
+              imageSrc="https://blocks.mvp-subha.me/assets/lunexa-db.png"
+              altText="FluensTree - App Album Cover"
+              captionText="FluensTree - App"
+              containerHeight="400px"
+              containerWidth="1024px"
+              imageHeight="580px"
+              imageWidth="1024px"
+              rotateAmplitude={6}
+              scaleOnHover={1.1}
+              showMobileWarning={false}
+              showTooltip={true}
+              displayOverlayContent={true}
+              overlayContent={
+                <p className="tilted-card-demo-text">FluensTree - App</p>
+              }
+            />
+          </div>
           <div
-            className={`relative z-10 mx-auto max-w-5xl overflow-hidden rounded-lg border border-white/10 ${shadowClass}`}
+            className={`block lg:hidden  relative z-10 mx-auto max-w-5xl overflow-hidden rounded-lg border border-white/10 ${shadowClass}`}
           >
             <img
               src="https://blocks.mvp-subha.me/assets/lunexa-db.png"
