@@ -79,18 +79,10 @@ export default function Hero() {
 
           <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:mb-0 sm:flex-row">
             <Link
-              href="/docs/get-started"
-              className={`neumorphic-button relative w-full overflow-hidden rounded-full border border-white/10 bg-gradient-to-b from-white/10 to-white/5 px-8 py-2 text-white transition-all duration-300 hover:border-primary/30 sm:w-auto hover:brightness-85 ${buttonShadow} ${
+              href="/signup"
+              className={`relative w-full overflow-hidden rounded-full border border-white/10 px-8 py-2 text-white transition-all sm:w-auto duration-300 hover:border-primary/30  hover:brightness-85 button-gradient ${
                 isDark ? "text-zinc-50" : "text-zinc-50 "
               }`}
-              style={{
-                boxShadow: isDark
-                  ? `0 0 20px ${primaryOklch} / 0.32`
-                  : `0 0 20px ${primaryOklch} / 0.13`,
-                background: isDark
-                  ? "linear-gradient(153deg,rgba(133, 93, 227, 1) 11%, rgba(153, 110, 255, 1) 100%, rgba(117, 76, 212, 1) 100%)"
-                  : "linear-gradient(153deg,rgba(133, 93, 227, 1) 11%, rgba(153, 110, 255, 1) 100%, rgba(117, 76, 212, 1) 100%)",
-              }}
             >
               Get Started
             </Link>

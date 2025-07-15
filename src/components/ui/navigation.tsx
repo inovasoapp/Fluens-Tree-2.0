@@ -162,7 +162,7 @@ const Navigation = () => {
             </span>
 
             <Link
-              href="/login"
+              href="/signin"
               className={`text-sm font-light transition-all duration-300 ml-4 ${
                 isDark
                   ? "text-zinc-200 hover:text-primary"
@@ -231,7 +231,7 @@ const Navigation = () => {
 
                   <div className="flex flex-1 h-full flex-col items-center gap-3 mt-4">
                     <Link
-                      href="/login"
+                      href="/signin"
                       className={`w-full flex items-center justify-center rounded-md py-2 text-lg font-light ${
                         isDark
                           ? "bg-neutral-900/60 text-muted-foreground hover:text-primary"
@@ -246,11 +246,7 @@ const Navigation = () => {
                           setIsMobileMenuOpen(false);
                           scrollToSection("cta");
                         }}
-                        className={`button-gradient flex w-full py-5 ${
-                          isDark
-                            ? ""
-                            : "bg-primary/90 text-white border-primary/20"
-                        }`}
+                        className="button-gradient flex w-full py-5 text-white border-primary/20 "
                       >
                         Start Trading
                       </Button>

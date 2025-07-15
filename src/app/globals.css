@@ -172,4 +172,16 @@
   button {
     cursor: pointer;
   }
+
+  .button-gradient {
+    background: linear-gradient(90deg, #9d398a 0%, #6f5ac3 100%);
+  }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, #9b87f5 0%, #7e69ab 100%);
+  }
+
+  .hero-gradient:hover {
+    background: linear-gradient(185deg, #9b87f5 0%, #7e69ab 100%);
+  }
 }
