@@ -38,7 +38,7 @@ export default function SignUp() {
   return (
     <section
       className={
-        `relative w-full h-dvh  overflow-hidden pb-10 pt-32 font-light antialiased md:pb-40 md:pt-40 ` +
+        `relative w-full h-dvh  overflow-hidden py-32 font-light antialiased  flex items-center justify-center ` +
         (isDark ? "bg-[#0a0613] text-white" : "bg-[#f8f8fa] text-zinc-900")
       }
       style={{
