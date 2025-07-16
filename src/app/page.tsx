@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "../components/ui/button";
 import { ThemeToggle } from "../components/ThemeToggle";
-import LandingPage from "./(public)/page";
+import LandingPage from "./[locale]/(public)/page";
 
 function useTheme() {
   const [theme, setTheme] = useState<"light" | "dark">(() => {
