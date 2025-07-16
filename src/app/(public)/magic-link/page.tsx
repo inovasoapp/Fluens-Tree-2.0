@@ -20,6 +20,9 @@ export default function SignupMagicLink() {
   const { theme } = useThemeStore();
   const isDark = theme === "dark";
   const primaryOklch = "oklch(0.6726 0.2904 341.4084)";
+  const radialGradient = isDark
+    ? "radial-gradient(circle at 70% 30%, rgba(155, 135, 245, 0.15) 0%, rgba(13, 10, 25, 0) 60%)"
+    : "radial-gradient(circle at 70% 30%, rgba(155, 135, 245, 0.18) 0%, rgba(255, 255, 255, 0) 60%)";
   const shadowClass = isDark
     ? `shadow-[0_0_50px_${primaryOklch
         .replace(/oklch\(|\)/g, "")
@@ -56,7 +59,20 @@ export default function SignupMagicLink() {
           : "linear-gradient(135deg, #f8f8fa 0%, #e6e6f0 100%)",
       }}
     >
-      <div className="w-full max-w-96 mx-auto bg-zinc-100 dark:bg-zinc-900/40 px-4 py-8 rounded-2xl shadow-2xl">
+      <div
+        className="absolute right-0 top-0 w-full"
+        style={{
+          background: radialGradient,
+        }}
+      />
+      <div
+        className="absolute left-0 top-0 h-full w-full -scale-x-100"
+        style={{
+          background: radialGradient,
+        }}
+      />
+
+      <div className="w-full z-10 max-w-96 mx-auto bg-zinc-100 dark:bg-zinc-900/40 px-4 py-8 rounded-2xl shadow-2xl">
         <div className="max-w-96 w-full">
           <div className="mb-8">
             <Link
