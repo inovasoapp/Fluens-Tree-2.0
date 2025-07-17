@@ -1,5 +1,18 @@
 {
   "language": "Español",
   "hello": "Hola",
-  "welcome": "Bienvenido"
+  "welcome": "Bienvenido",
+  "navigation": {
+    "home": "Inicio",
+    "problems": "Problemas",
+    "solutions": "Soluciones",
+    "about": "Acerca de",
+    "plans": "Planes",
+    "faq": "FAQ",
+    "login": "Iniciar sesión",
+    "getStarted": "Comenzar",
+    "startTrading": "Comenzar a operar",
+    "close": "Cerrar",
+    "learnHow": "Aprende cómo funciona"
+  }
 }

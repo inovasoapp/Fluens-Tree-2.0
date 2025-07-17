@@ -1,5 +1,18 @@
 {
   "language": "Português (Brasil)",
   "hello": "Olá",
-  "welcome": "Bem-vindo"
+  "welcome": "Bem-vindo",
+  "navigation": {
+    "home": "Início",
+    "problems": "Problemas",
+    "solutions": "Soluções",
+    "about": "Sobre",
+    "plans": "Planos",
+    "faq": "FAQ",
+    "login": "Entrar",
+    "getStarted": "Começar",
+    "startTrading": "Começar a Negociar",
+    "close": "Fechar",
+    "learnHow": "Saiba como funciona"
+  }
 }

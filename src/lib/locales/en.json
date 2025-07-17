@@ -1,5 +1,18 @@
 {
   "language": "English",
   "hello": "Hello",
-  "welcome": "Welcome"
+  "welcome": "Welcome",
+  "navigation": {
+    "home": "Home",
+    "problems": "Problems",
+    "solutions": "Solutions",
+    "about": "About",
+    "plans": "Plans",
+    "faq": "FAQ",
+    "login": "Login",
+    "getStarted": "Get Started",
+    "startTrading": "Start Trading",
+    "close": "Close",
+    "learnHow": "Learn how it works"
+  }
 }

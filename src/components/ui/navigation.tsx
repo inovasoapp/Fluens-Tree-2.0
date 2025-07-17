@@ -8,12 +8,16 @@ import Link from "next/link";
 import { ThemeToggle, useThemeStore } from "../ThemeToggle";
 import { AnimatedBackground } from "../motion-primitives/animated-background";
 import Logo from "../logo";
+import { useI18n, useCurrentLocale } from "@/lib/locales/client";
+import { checkTranslationKey } from "@/lib/i18n-utils";
 
 const Navigation = () => {
   const { theme } = useThemeStore();
   const isDark = theme === "dark";
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const t = useI18n();
+  const locale = useCurrentLocale();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,32 +57,32 @@ const Navigation = () => {
 
   const navItems = [
     {
-      name: "Início",
+      name: t("navigation.home"),
       href: "#hero",
       onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }),
     },
     {
-      name: "Problemas",
+      name: t("navigation.problems"),
       href: "#problemas",
       onClick: () => scrollToSection("problemas"),
     },
     {
-      name: "Soluções",
+      name: t("navigation.solutions"),
       href: "#solucoes",
       onClick: () => scrollToSection("solucoes"),
     },
     {
-      name: "Sobre",
+      name: t("navigation.about"),
       href: "#sobre",
       onClick: () => scrollToSection("sobre"),
     },
     {
-      name: "Planos",
+      name: t("navigation.plans"),
       href: "#planos",
       onClick: () => scrollToSection("planos"),
     },
     {
-      name: "FAQ",
+      name: t("navigation.faq"),
       href: "#faq",
       onClick: () => scrollToSection("faq"),
     },
@@ -171,7 +175,7 @@ const Navigation = () => {
                   : "text-zinc-700 hover:text-primary"
               }`}
             >
-              Login
+              {t("navigation.login")}
             </Link>
             <Link href="/signup">
               <Button
@@ -181,7 +185,7 @@ const Navigation = () => {
                   isDark ? "" : "bg-primary/90 text-white border-primary/20"
                 }`}
               >
-                Get Start
+                {t("navigation.getStarted")}
               </Button>
             </Link>
           </div>
@@ -240,7 +244,7 @@ const Navigation = () => {
                           : "bg-zinc-100 text-zinc-700 hover:text-primary"
                       }`}
                     >
-                      Login
+                      {t("navigation.login")}
                     </Link>
                     <Link href="/signup" className="flex flex-1 w-full">
                       <Button
@@ -250,7 +254,7 @@ const Navigation = () => {
                         }}
                         className="button-gradient flex w-full py-5 text-white border-primary/20 "
                       >
-                        Start Trading
+                        {t("navigation.startTrading")}
                       </Button>
                     </Link>
 
@@ -265,7 +269,7 @@ const Navigation = () => {
                           : "bg-zinc-100 text-zinc-700 border-zinc-300"
                       }`}
                     >
-                      Fechar
+                      {t("navigation.close")}
                     </Button>
 
                     <ThemeToggle />
