@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "../globals.css";
+import "../../globals.css";
 import { I18nProviderClient } from "@/lib/locales/client";
 import { ReactElement } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -31,17 +31,11 @@ export default async function RootLayout({
   const { locale } = await params;
 
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <I18nProviderClient locale={locale}>
-          <ThemeToggle />
-          <LanguageSelect />
+    <I18nProviderClient locale={locale}>
+      <ThemeToggle />
+      <LanguageSelect />
 
-          {children}
-        </I18nProviderClient>
-      </body>
-    </html>
+      {children}
+    </I18nProviderClient>
   );
 }
