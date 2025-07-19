@@ -14,5 +14,23 @@
     "startTrading": "Começar a Negociar",
     "close": "Fechar",
     "learnHow": "Saiba como funciona"
+  },
+  "sidebar": {
+    "language": "Idioma",
+    "viewAllPlans": "Ver todos os planos",
+    "learnMore": "Saiba mais",
+    "logout": "Sair",
+    "freePlan": "Plano Gratuito",
+    "application": "Aplicação",
+    "home": "Início",
+    "leads": "Leads",
+    "myLinks": "Meus links",
+    "analytics": "Análises",
+    "integrations": "Integrações",
+    "settings": "Configurações",
+    "support": "Suporte",
+    "tutorials": "Tutoriais",
+    "supportHelp": "Ajuda",
+    "tickets": "Chamados"
   }
 }

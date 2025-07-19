@@ -14,5 +14,23 @@
     "startTrading": "Start Trading",
     "close": "Close",
     "learnHow": "Learn how it works"
+  },
+  "sidebar": {
+    "language": "Language",
+    "viewAllPlans": "View all plans",
+    "learnMore": "Learn more",
+    "logout": "Logout",
+    "freePlan": "Free plan",
+    "application": "Application",
+    "home": "Home",
+    "leads": "Leads",
+    "myLinks": "My links",
+    "analytics": "Analytics",
+    "integrations": "Integrations",
+    "settings": "Settings",
+    "support": "Support",
+    "tutorials": "Tutorials",
+    "supportHelp": "Support",
+    "tickets": "Tickets"
   }
 }

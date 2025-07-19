@@ -5,6 +5,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import {
   SidebarFooter,
@@ -17,12 +19,27 @@ import {
 import { Separator } from "@radix-ui/react-separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { ChevronUp, Power, SettingsIcon } from "lucide-react";
+import { ChevronUp, Globe, Languages, Power, SettingsIcon } from "lucide-react";
 import Link from "next/link";
+import {
+  useChangeLocale,
+  useCurrentLocale,
+  useI18n,
+} from "@/lib/locales/client";
+import { Button } from "@/components/ui/button";
 
 export function AppSidebarFooter() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const currentLocale = useCurrentLocale();
+  const changeLocale = useChangeLocale();
+  const t = useI18n();
+
+  const languages = [
+    { code: "en", name: "English" },
+    { code: "pt-BR", name: "Português (BR)" },
+    { code: "es", name: "Español" },
+  ];
 
   function handleAuth() {
     // Implementar lógica de logout quando necessário
@@ -36,7 +53,7 @@ export function AppSidebarFooter() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
-                className={`h-16 ${isCollapsed ? "py-2 px-2" : "py-4"}`}
+                className={`${isCollapsed ? "py-2 px-2" : "py-6"}`}
               >
                 <Avatar>
                   <AvatarImage
@@ -49,7 +66,9 @@ export function AppSidebarFooter() {
                   <>
                     <div className="flex flex-col justify-center">
                       <span className="text-base font-heading">Rodolfo</span>
-                      <span className="text-xs font-light">plano Gratuito</span>
+                      <span className="text-xs font-light">
+                        {t("sidebar.freePlan")}
+                      </span>
                     </div>
                     <ChevronUp className="ml-auto" />
                   </>
@@ -90,29 +109,52 @@ export function AppSidebarFooter() {
                 </Link>
               </DropdownMenuItem>
 
-              <div className="h-1">
-                <Separator className="data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px bg-sidebar-border" />
-              </div>
+              <DropdownMenuSeparator />
 
-              <div className="h-1">
-                <Separator className="data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px bg-sidebar-border" />
-              </div>
+              {/* Seletor de idioma */}
+              <DropdownMenuLabel className="flex items-center gap-2 py-2">
+                <Globe size={16} />
+                <span>{t("sidebar.language")}</span>
+              </DropdownMenuLabel>
+
+              {languages.map((lang) => (
+                <DropdownMenuItem
+                  key={lang.code}
+                  className={`flex items-center gap-2 cursor-pointer ${
+                    currentLocale === lang.code
+                      ? "bg-primary/10 font-medium"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    changeLocale(lang.code as "en" | "pt-BR" | "es")
+                  }
+                >
+                  <div className="w-4 h-4 flex items-center justify-center">
+                    {currentLocale === lang.code && (
+                      <div className="w-2 h-2 rounded-full bg-primary" />
+                    )}
+                  </div>
+                  {lang.name}
+                </DropdownMenuItem>
+              ))}
+
+              <DropdownMenuSeparator />
 
               <DropdownMenuItem asChild>
-                <button className="cursor-pointer">Ver todos os planos</button>
+                <button className="cursor-pointer">
+                  {t("sidebar.viewAllPlans")}
+                </button>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <span>Saiba mais</span>
+                <span>{t("sidebar.learnMore")}</span>
               </DropdownMenuItem>
 
-              <div className="h-1">
-                <Separator className="data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px bg-sidebar-border" />
-              </div>
+              <DropdownMenuSeparator />
 
               <DropdownMenuItem>
                 <button onClick={handleAuth} className="w-full py-2 flex gap-2">
                   <Power />
-                  Sair
+                  {t("sidebar.logout")}
                 </button>
               </DropdownMenuItem>
             </DropdownMenuContent>
