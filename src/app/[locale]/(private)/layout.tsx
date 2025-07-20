@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-// import "../../globals.css";
 import "./app-styles.css";
 import { I18nProviderClient } from "@/lib/locales/client";
 import { ReactElement } from "react";
-import { FloatingMenu } from "./components/FloatingMenu";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { AppSidebar } from "./components/AppSidebar";
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebarUserGroup } from "./components/AppSidebarUserGroup";
 import { AppSidebarFooter } from "./components/AppSidebarFooter";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,24 +36,23 @@ export default async function AppLayout({
 
   return (
     <I18nProviderClient locale={locale}>
-      <div className={`${geistSans.variable} ${geistMono.variable}`}>
-        <SidebarProvider>
-          <div className="flex h-dvh w-full">
-            <SidebarTrigger className="fixed top-0 left-0 z-20 flex md:hidden items-center justify-center px-2 h-10 w-10 bg-primary/10" />
+      <ThemeProvider>
+        <div className={`${geistSans.variable} ${geistMono.variable}`}>
+          <SidebarProvider>
+            <div className="flex h-dvh w-full">
+              <SidebarTrigger className="fixed top-0 left-0 z-20 flex md:hidden items-center justify-center px-2 h-10 w-10 bg-primary/10" />
 
-            <AppSidebar>
-              <AppSidebarUserGroup />
-              <AppSidebarFooter />
-            </AppSidebar>
+              <AppSidebar>
+                <AppSidebarUserGroup />
+                <AppSidebarFooter />
+              </AppSidebar>
 
-            {/* Conteúdo principal */}
-            <div className="flex-1 h-full w-full relative">
-              <ThemeToggle />
-              {children}
+              {/* Conteúdo principal */}
+              <div className="flex-1 h-full w-full relative">{children}</div>
             </div>
-          </div>
-        </SidebarProvider>
-      </div>
+          </SidebarProvider>
+        </div>
+      </ThemeProvider>
     </I18nProviderClient>
   );
 }

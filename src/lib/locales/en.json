@@ -31,6 +31,9 @@
     "support": "Support",
     "tutorials": "Tutorials",
     "supportHelp": "Support",
-    "tickets": "Tickets"
+    "tickets": "Tickets",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "theme": "Theme"
   }
 }

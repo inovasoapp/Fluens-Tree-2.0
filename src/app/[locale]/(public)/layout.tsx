@@ -5,6 +5,7 @@ import { I18nProviderClient } from "@/lib/locales/client";
 import { ReactElement } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageSelect } from "@/components/LanguageSelect";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,10 +33,13 @@ export default async function RootLayout({
 
   return (
     <I18nProviderClient locale={locale}>
-      <ThemeToggle />
-      <LanguageSelect />
-
-      {children}
+      <ThemeProvider>
+        <div className={`${geistSans.variable} ${geistMono.variable}`}>
+          <ThemeToggle />
+          <LanguageSelect />
+          {children}
+        </div>
+      </ThemeProvider>
     </I18nProviderClient>
   );
 }

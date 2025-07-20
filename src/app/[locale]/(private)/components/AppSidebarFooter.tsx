@@ -18,8 +18,9 @@ import {
 
 import { Separator } from "@radix-ui/react-separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
 
-import { ChevronUp, Globe, Languages, Power, SettingsIcon } from "lucide-react";
+import { ChevronUp, Globe, Moon, Power, SettingsIcon, Sun } from "lucide-react";
 import Link from "next/link";
 import {
   useChangeLocale,
@@ -27,6 +28,7 @@ import {
   useI18n,
 } from "@/lib/locales/client";
 import { Button } from "@/components/ui/button";
+import { useThemeStore } from "@/components/ThemeToggle";
 
 export function AppSidebarFooter() {
   const { state } = useSidebar();
@@ -34,6 +36,8 @@ export function AppSidebarFooter() {
   const currentLocale = useCurrentLocale();
   const changeLocale = useChangeLocale();
   const t = useI18n();
+  const { theme, toggleTheme, setTheme } = useThemeStore();
+  const isDark = theme === "dark";
 
   const languages = [
     { code: "en", name: "English" },
@@ -108,6 +112,23 @@ export function AppSidebarFooter() {
                   </span>
                 </Link>
               </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              {/* Switch de tema no dropdown */}
+              <DropdownMenuLabel className="flex items-center justify-between py-2">
+                <div className="flex items-center gap-2">
+                  {isDark ? <Moon size={16} /> : <Sun size={16} />}
+                  <span>{t("sidebar.theme")}</span>
+                </div>
+                <Switch
+                  checked={isDark}
+                  onCheckedChange={(checked) =>
+                    setTheme(checked ? "dark" : "light")
+                  }
+                  aria-label="Toggle theme"
+                />
+              </DropdownMenuLabel>
 
               <DropdownMenuSeparator />
 
