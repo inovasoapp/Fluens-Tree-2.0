@@ -14,7 +14,7 @@ export function Canvas() {
   if (!currentPage) return null;
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full bg-background">
       <DraggableCanvas>
         <div className="flex items-center justify-center w-full h-full">
           {/* iPhone Mockup */}
@@ -97,7 +97,7 @@ export function Canvas() {
       <CanvasControls />
 
       {/* Canvas Info */}
-      <div className="absolute bottom-6 left-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
+      <div className="absolute bottom-6 left-6 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
         <div className="text-sm text-gray-500 dark:text-gray-400">
           <div className="font-medium text-gray-900 dark:text-gray-100 mb-1">
             iPhone 15 Pro Preview

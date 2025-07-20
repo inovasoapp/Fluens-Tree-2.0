@@ -69,7 +69,7 @@ export function Toolbar() {
   const zoomPercentage = Math.round(canvasPosition.scale * 100);
 
   return (
-    <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+    <div className="bg-white dark:bg-card border-b border-gray-200 dark:border-gray-700 px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Left Section */}
         <div className="flex items-center space-x-4">
@@ -102,7 +102,7 @@ export function Toolbar() {
         {/* Center Section */}
         <div className="flex items-center space-x-4">
           {/* Canvas Controls */}
-          <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+          <div className="flex items-center space-x-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
             <Button
               variant="ghost"
               size="sm"

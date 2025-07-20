@@ -249,6 +249,56 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* Dark Elements Panel */
+.elements-panel-dark {
+  background: #1a1a1a;
+  color: white;
+}
+
+.elements-panel-dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.elements-panel-dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Element Template Cards */
+.template-card {
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  transition: all 0.2s ease;
+}
+
+.template-card:hover {
+  background: #333333;
+  border-color: #555555;
+  transform: translateY(-1px);
+}
+
+.template-card.dragging {
+  opacity: 0.8;
+  transform: rotate(-2deg) scale(0.95);
+}
+
+/* Template Preview Styles */
+.template-preview {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Category Headers */
+.category-header {
+  color: #9ca3af;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
 /* Animation for empty state */
 @keyframes float {
   0%,

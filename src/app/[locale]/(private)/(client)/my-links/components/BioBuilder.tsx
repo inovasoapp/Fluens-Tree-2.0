@@ -37,7 +37,7 @@ export function BioBuilder() {
           </div>
 
           {/* Canvas Area */}
-          <div className="canvas-container flex-1 flex items-center justify-center p-8 overflow-auto">
+          <div className="canvas-container flex-1 flex items-center justify-center overflow-auto">
             <Canvas />
           </div>
         </div>
