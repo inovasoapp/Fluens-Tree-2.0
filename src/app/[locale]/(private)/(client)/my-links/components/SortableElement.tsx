@@ -1,0 +1,82 @@
+"use client";
+
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { BioElement } from "@/types/bio-builder";
+import { ElementRenderer } from "./ElementRenderer";
+import { GripVertical } from "lucide-react";
+
+interface SortableElementProps {
+  element: BioElement;
+  isSelected: boolean;
+  onSelect: (element: BioElement) => void;
+}
+
+export function SortableElement({
+  element,
+  isSelected,
+  onSelect,
+}: SortableElementProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: element.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`group relative transition-all duration-200 ${
+        isDragging ? "opacity-50 scale-95 z-50" : "opacity-100 scale-100"
+      } ${
+        isSelected
+          ? "ring-2 ring-blue-500 ring-offset-2"
+          : "hover:ring-1 hover:ring-gray-300"
+      }`}
+      onClick={() => onSelect(element)}
+    >
+      {/* Drag Handle */}
+      <div
+        className={`absolute -left-6 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing ${
+          isDragging ? "opacity-100" : ""
+        }`}
+        {...attributes}
+        {...listeners}
+      >
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded p-1 shadow-sm">
+          <GripVertical className="w-3 h-3 text-gray-400" />
+        </div>
+      </div>
+
+      {/* Element Content */}
+      <div className="element-hover">
+        <ElementRenderer element={element} />
+      </div>
+
+      {/* Selection Indicator */}
+      {isSelected && (
+        <div className="absolute -top-2 -left-2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm animate-pulse"></div>
+      )}
+
+      {/* Hover Indicator */}
+      <div
+        className={`absolute inset-0 pointer-events-none transition-all duration-200 ${
+          isDragging
+            ? "bg-blue-100 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-600 rounded"
+            : ""
+        }`}
+      />
+    </div>
+  );
+}

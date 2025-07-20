@@ -1,0 +1,367 @@
+/* Bio Builder Specific Styles */
+
+.bio-builder-container {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.canvas-container {
+  background: radial-gradient(
+      circle at 25% 25%,
+      rgba(59, 130, 246, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgba(168, 85, 247, 0.1) 0%,
+      transparent 50%
+    ),
+    linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.dark .canvas-container {
+  background: radial-gradient(
+      circle at 25% 25%,
+      rgba(59, 130, 246, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgba(168, 85, 247, 0.05) 0%,
+      transparent 50%
+    ),
+    linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.iphone-mockup {
+  filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.15));
+  transition: transform 0.1s ease-out;
+}
+
+.dark .iphone-mockup {
+  filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.3));
+}
+
+.element-hover {
+  transition: all 0.2s ease-in-out;
+}
+
+.element-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .element-hover:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.properties-panel {
+  backdrop-filter: blur(10px);
+}
+
+.toolbar-glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.dark .toolbar-glass {
+  background: rgba(31, 41, 55, 0.8);
+}
+
+/* Canvas Drag Styles */
+.canvas-dragging {
+  cursor: grabbing !important;
+}
+
+.canvas-dragging * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+.canvas-grab {
+  cursor: grab;
+}
+
+.canvas-grab:active {
+  cursor: grabbing;
+}
+
+/* Space key pressed state */
+.space-pressed {
+  cursor: grab !important;
+}
+
+.space-pressed * {
+  cursor: grab !important;
+}
+
+/* Space key indicator */
+.space-indicator {
+  animation: spaceGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes spaceGlow {
+  0%,
+  100% {
+    background-color: rgb(234, 179, 8);
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+  }
+  50% {
+    background-color: rgb(250, 204, 21);
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.7);
+  }
+}
+
+/* Canvas Controls */
+.canvas-controls {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dark .canvas-controls {
+  background: rgba(31, 41, 55, 0.9);
+}
+
+.canvas-controls button {
+  transition: all 0.2s ease;
+}
+
+.canvas-controls button:hover {
+  transform: scale(1.05);
+}
+
+.canvas-controls button:active {
+  transform: scale(0.95);
+}
+
+/* Zoom Animation */
+.canvas-zoom-transition {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Canvas Info Panel */
+.canvas-info {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dark .canvas-info {
+  background: rgba(31, 41, 55, 0.9);
+}
+
+/* Drag and Drop Styles */
+.dragging {
+  cursor: grabbing !important;
+}
+
+.drag-overlay {
+  z-index: 999;
+  pointer-events: none;
+}
+
+.drop-zone-active {
+  background: rgba(59, 130, 246, 0.05);
+  border: 2px dashed rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+}
+
+.dark .drop-zone-active {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.drop-zone-over {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.dark .drop-zone-over {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+/* Sortable Element Styles */
+.sortable-element {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sortable-element.dragging {
+  transform: rotate(3deg) scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 50;
+}
+
+.dark .sortable-element.dragging {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.sortable-element .drag-handle {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sortable-element:hover .drag-handle,
+.sortable-element.dragging .drag-handle {
+  opacity: 1;
+}
+
+/* Template Drag Styles */
+.template-dragging {
+  transform: rotate(-2deg) scale(0.95);
+  opacity: 0.8;
+}
+
+/* Canvas Instructions */
+.canvas-instructions {
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.7);
+  transition: opacity 0.3s ease;
+}
+
+.canvas-instructions.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Animation for empty state */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Drag feedback animations */
+@keyframes dragPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.drag-pulse {
+  animation: dragPulse 1s ease-in-out infinite;
+}
+
+/* Canvas position indicator */
+@keyframes positionPulse {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.position-indicator {
+  animation: positionPulse 2s ease-in-out infinite;
+}
+
+/* Drop indicator styles */
+.drop-indicator {
+  position: relative;
+}
+
+.drop-indicator::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #3b82f6;
+  border-radius: 1px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.drop-indicator.active::before {
+  opacity: 1;
+}
+
+/* Improved hover states */
+.element-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.element-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dark .element-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Canvas grid background (optional) */
+.canvas-grid {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.dark .canvas-grid {
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Smooth transitions for canvas operations */
+.canvas-transition {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Status indicators */
+.status-indicator {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

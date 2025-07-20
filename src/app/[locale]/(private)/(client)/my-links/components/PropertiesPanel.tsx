@@ -1,0 +1,375 @@
+"use client";
+
+import { useBioBuilderStore } from "@/stores/bio-builder-store";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Slider } from "@/components/ui/slider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Trash2, X } from "lucide-react";
+
+export function PropertiesPanel() {
+  const { selectedElement, updateElement, deleteElement, setSelectedElement } =
+    useBioBuilderStore();
+
+  if (!selectedElement) return null;
+
+  const handleUpdate = (field: string, value: any) => {
+    updateElement(selectedElement.id, { [field]: value });
+  };
+
+  const handleDelete = () => {
+    deleteElement(selectedElement.id);
+  };
+
+  const renderElementSpecificFields = () => {
+    switch (selectedElement.type) {
+      case "profile":
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={selectedElement.data.name || ""}
+                onChange={(e) => handleUpdate("name", e.target.value)}
+                placeholder="Your name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                value={selectedElement.data.bio || ""}
+                onChange={(e) => handleUpdate("bio", e.target.value)}
+                placeholder="Your bio description"
+                rows={3}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="avatar">Avatar URL</Label>
+              <Input
+                id="avatar"
+                value={selectedElement.data.avatar || ""}
+                onChange={(e) => handleUpdate("avatar", e.target.value)}
+                placeholder="https://example.com/avatar.jpg"
+              />
+            </div>
+          </>
+        );
+
+      case "link":
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={selectedElement.data.title || ""}
+                onChange={(e) => handleUpdate("title", e.target.value)}
+                placeholder="Link title"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="url">URL</Label>
+              <Input
+                id="url"
+                value={selectedElement.data.url || ""}
+                onChange={(e) => handleUpdate("url", e.target.value)}
+                placeholder="https://example.com"
+              />
+            </div>
+          </>
+        );
+
+      case "text":
+        return (
+          <div className="space-y-2">
+            <Label htmlFor="content">Content</Label>
+            <Textarea
+              id="content"
+              value={selectedElement.data.content || ""}
+              onChange={(e) => handleUpdate("content", e.target.value)}
+              placeholder="Your text content"
+              rows={4}
+            />
+          </div>
+        );
+
+      case "social":
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="platform">Platform</Label>
+              <Select
+                value={selectedElement.data.platform || "instagram"}
+                onValueChange={(value) => handleUpdate("platform", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="instagram">Instagram</SelectItem>
+                  <SelectItem value="twitter">Twitter</SelectItem>
+                  <SelectItem value="youtube">YouTube</SelectItem>
+                  <SelectItem value="tiktok">TikTok</SelectItem>
+                  <SelectItem value="linkedin">LinkedIn</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={selectedElement.data.username || ""}
+                onChange={(e) => handleUpdate("username", e.target.value)}
+                placeholder="yourusername"
+              />
+            </div>
+          </>
+        );
+
+      case "image":
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="src">Image URL</Label>
+              <Input
+                id="src"
+                value={selectedElement.data.src || ""}
+                onChange={(e) => handleUpdate("src", e.target.value)}
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="alt">Alt Text</Label>
+              <Input
+                id="alt"
+                value={selectedElement.data.alt || ""}
+                onChange={(e) => handleUpdate("alt", e.target.value)}
+                placeholder="Image description"
+              />
+            </div>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Properties
+        </h2>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setSelectedElement(null)}
+        >
+          <X className="w-4 h-4" />
+        </Button>
+      </div>
+
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-6">
+          {/* Element Type */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {selectedElement.type.charAt(0).toUpperCase() +
+                selectedElement.type.slice(1)}{" "}
+              Element
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <Separator />
+
+          {/* Element-specific fields */}
+          <div className="space-y-4">{renderElementSpecificFields()}</div>
+
+          <Separator />
+
+          {/* Styling Options */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Styling
+            </h3>
+
+            {/* Background Color */}
+            <div className="space-y-2">
+              <Label htmlFor="backgroundColor">Background Color</Label>
+              <div className="flex space-x-2">
+                <Input
+                  id="backgroundColor"
+                  type="color"
+                  value={selectedElement.data.backgroundColor || "#ffffff"}
+                  onChange={(e) =>
+                    handleUpdate("backgroundColor", e.target.value)
+                  }
+                  className="w-12 h-8 p-1 border rounded"
+                />
+                <Input
+                  value={selectedElement.data.backgroundColor || "#ffffff"}
+                  onChange={(e) =>
+                    handleUpdate("backgroundColor", e.target.value)
+                  }
+                  placeholder="#ffffff"
+                  className="flex-1"
+                />
+              </div>
+            </div>
+
+            {/* Text Color */}
+            {selectedElement.type !== "divider" &&
+              selectedElement.type !== "image" && (
+                <div className="space-y-2">
+                  <Label htmlFor="textColor">Text Color</Label>
+                  <div className="flex space-x-2">
+                    <Input
+                      id="textColor"
+                      type="color"
+                      value={selectedElement.data.textColor || "#000000"}
+                      onChange={(e) =>
+                        handleUpdate("textColor", e.target.value)
+                      }
+                      className="w-12 h-8 p-1 border rounded"
+                    />
+                    <Input
+                      value={selectedElement.data.textColor || "#000000"}
+                      onChange={(e) =>
+                        handleUpdate("textColor", e.target.value)
+                      }
+                      placeholder="#000000"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+              )}
+
+            {/* Border Radius */}
+            {selectedElement.type !== "divider" && (
+              <div className="space-y-2">
+                <Label>
+                  Border Radius: {selectedElement.data.borderRadius || 0}px
+                </Label>
+                <Slider
+                  value={[selectedElement.data.borderRadius || 0]}
+                  onValueChange={(value) =>
+                    handleUpdate("borderRadius", value[0])
+                  }
+                  max={50}
+                  step={1}
+                  className="w-full"
+                />
+              </div>
+            )}
+
+            {/* Padding */}
+            <div className="space-y-2">
+              <Label>Padding: {selectedElement.data.padding || 0}px</Label>
+              <Slider
+                value={[selectedElement.data.padding || 0]}
+                onValueChange={(value) => handleUpdate("padding", value[0])}
+                max={50}
+                step={1}
+                className="w-full"
+              />
+            </div>
+
+            {/* Margin */}
+            <div className="space-y-2">
+              <Label>Margin: {selectedElement.data.margin || 0}px</Label>
+              <Slider
+                value={[selectedElement.data.margin || 0]}
+                onValueChange={(value) => handleUpdate("margin", value[0])}
+                max={50}
+                step={1}
+                className="w-full"
+              />
+            </div>
+
+            {/* Typography */}
+            {selectedElement.type !== "divider" &&
+              selectedElement.type !== "image" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>
+                      Font Size: {selectedElement.data.fontSize || 14}px
+                    </Label>
+                    <Slider
+                      value={[selectedElement.data.fontSize || 14]}
+                      onValueChange={(value) =>
+                        handleUpdate("fontSize", value[0])
+                      }
+                      min={10}
+                      max={32}
+                      step={1}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fontWeight">Font Weight</Label>
+                    <Select
+                      value={selectedElement.data.fontWeight || "normal"}
+                      onValueChange={(value) =>
+                        handleUpdate("fontWeight", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Light</SelectItem>
+                        <SelectItem value="normal">Normal</SelectItem>
+                        <SelectItem value="bold">Bold</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="textAlign">Text Align</Label>
+                    <Select
+                      value={selectedElement.data.textAlign || "left"}
+                      onValueChange={(value) =>
+                        handleUpdate("textAlign", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="left">Left</SelectItem>
+                        <SelectItem value="center">Center</SelectItem>
+                        <SelectItem value="right">Right</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+          </div>
+        </div>
+      </ScrollArea>
+    </div>
+  );
+}
