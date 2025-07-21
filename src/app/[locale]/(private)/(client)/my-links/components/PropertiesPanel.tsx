@@ -15,23 +15,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, X } from "lucide-react";
+import { Trash2, X, Settings } from "lucide-react";
+import { BackgroundEditor } from "./BackgroundEditor";
 
 export function PropertiesPanel() {
   const { selectedElement, updateElement, deleteElement, setSelectedElement } =
     useBioBuilderStore();
 
-  if (!selectedElement) return null;
-
   const handleUpdate = (field: string, value: any) => {
+    if (!selectedElement) return;
     updateElement(selectedElement.id, { [field]: value });
   };
 
   const handleDelete = () => {
+    if (!selectedElement) return;
     deleteElement(selectedElement.id);
   };
 
   const renderElementSpecificFields = () => {
+    if (!selectedElement) return null;
+
     switch (selectedElement.type) {
       case "profile":
         return (
@@ -167,17 +170,19 @@ export function PropertiesPanel() {
     }
   };
 
-  return (
+  // Render element properties panel
+  const renderElementProperties = () => (
     <div className="h-full flex flex-col bg-card">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Properties
+          Element Properties
         </h2>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setSelectedElement(null)}
+          title="Back to page settings"
         >
           <X className="w-4 h-4" />
         </Button>
@@ -188,8 +193,8 @@ export function PropertiesPanel() {
           {/* Element Type */}
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {selectedElement.type.charAt(0).toUpperCase() +
-                selectedElement.type.slice(1)}{" "}
+              {selectedElement!.type.charAt(0).toUpperCase() +
+                selectedElement!.type.slice(1)}{" "}
               Element
             </span>
             <Button
@@ -222,14 +227,14 @@ export function PropertiesPanel() {
                 <Input
                   id="backgroundColor"
                   type="color"
-                  value={selectedElement.data.backgroundColor || "#ffffff"}
+                  value={selectedElement!.data.backgroundColor || "#ffffff"}
                   onChange={(e) =>
                     handleUpdate("backgroundColor", e.target.value)
                   }
                   className="w-12 h-8 p-1 border rounded"
                 />
                 <Input
-                  value={selectedElement.data.backgroundColor || "#ffffff"}
+                  value={selectedElement!.data.backgroundColor || "#ffffff"}
                   onChange={(e) =>
                     handleUpdate("backgroundColor", e.target.value)
                   }
@@ -240,22 +245,22 @@ export function PropertiesPanel() {
             </div>
 
             {/* Text Color */}
-            {selectedElement.type !== "divider" &&
-              selectedElement.type !== "image" && (
+            {selectedElement!.type !== "divider" &&
+              selectedElement!.type !== "image" && (
                 <div className="space-y-2">
                   <Label htmlFor="textColor">Text Color</Label>
                   <div className="flex space-x-2">
                     <Input
                       id="textColor"
                       type="color"
-                      value={selectedElement.data.textColor || "#000000"}
+                      value={selectedElement!.data.textColor || "#000000"}
                       onChange={(e) =>
                         handleUpdate("textColor", e.target.value)
                       }
                       className="w-12 h-8 p-1 border rounded"
                     />
                     <Input
-                      value={selectedElement.data.textColor || "#000000"}
+                      value={selectedElement!.data.textColor || "#000000"}
                       onChange={(e) =>
                         handleUpdate("textColor", e.target.value)
                       }
@@ -267,13 +272,13 @@ export function PropertiesPanel() {
               )}
 
             {/* Border Radius */}
-            {selectedElement.type !== "divider" && (
+            {selectedElement!.type !== "divider" && (
               <div className="space-y-2">
                 <Label>
-                  Border Radius: {selectedElement.data.borderRadius || 0}px
+                  Border Radius: {selectedElement!.data.borderRadius || 0}px
                 </Label>
                 <Slider
-                  value={[selectedElement.data.borderRadius || 0]}
+                  value={[selectedElement!.data.borderRadius || 0]}
                   onValueChange={(value) =>
                     handleUpdate("borderRadius", value[0])
                   }
@@ -286,9 +291,9 @@ export function PropertiesPanel() {
 
             {/* Padding */}
             <div className="space-y-2">
-              <Label>Padding: {selectedElement.data.padding || 0}px</Label>
+              <Label>Padding: {selectedElement!.data.padding || 0}px</Label>
               <Slider
-                value={[selectedElement.data.padding || 0]}
+                value={[selectedElement!.data.padding || 0]}
                 onValueChange={(value) => handleUpdate("padding", value[0])}
                 max={50}
                 step={1}
@@ -298,9 +303,9 @@ export function PropertiesPanel() {
 
             {/* Margin */}
             <div className="space-y-2">
-              <Label>Margin: {selectedElement.data.margin || 0}px</Label>
+              <Label>Margin: {selectedElement!.data.margin || 0}px</Label>
               <Slider
-                value={[selectedElement.data.margin || 0]}
+                value={[selectedElement!.data.margin || 0]}
                 onValueChange={(value) => handleUpdate("margin", value[0])}
                 max={50}
                 step={1}
@@ -309,15 +314,15 @@ export function PropertiesPanel() {
             </div>
 
             {/* Typography */}
-            {selectedElement.type !== "divider" &&
-              selectedElement.type !== "image" && (
+            {selectedElement!.type !== "divider" &&
+              selectedElement!.type !== "image" && (
                 <>
                   <div className="space-y-2">
                     <Label>
-                      Font Size: {selectedElement.data.fontSize || 14}px
+                      Font Size: {selectedElement!.data.fontSize || 14}px
                     </Label>
                     <Slider
-                      value={[selectedElement.data.fontSize || 14]}
+                      value={[selectedElement!.data.fontSize || 14]}
                       onValueChange={(value) =>
                         handleUpdate("fontSize", value[0])
                       }
@@ -331,7 +336,7 @@ export function PropertiesPanel() {
                   <div className="space-y-2">
                     <Label htmlFor="fontWeight">Font Weight</Label>
                     <Select
-                      value={selectedElement.data.fontWeight || "normal"}
+                      value={selectedElement!.data.fontWeight || "normal"}
                       onValueChange={(value) =>
                         handleUpdate("fontWeight", value)
                       }
@@ -350,7 +355,7 @@ export function PropertiesPanel() {
                   <div className="space-y-2">
                     <Label htmlFor="textAlign">Text Align</Label>
                     <Select
-                      value={selectedElement.data.textAlign || "left"}
+                      value={selectedElement!.data.textAlign || "left"}
                       onValueChange={(value) =>
                         handleUpdate("textAlign", value)
                       }
@@ -370,6 +375,52 @@ export function PropertiesPanel() {
           </div>
         </div>
       </ScrollArea>
+    </div>
+  );
+
+  // Render page settings panel (background editor)
+  const renderPageSettings = () => (
+    <div className="h-full flex flex-col bg-card">
+      {/* Header */}
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Page Settings
+          </h2>
+        </div>
+      </div>
+
+      <ScrollArea className="flex-1">
+        <div className="p-4">
+          {/* Background Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Background
+              </h3>
+            </div>
+
+            <BackgroundEditor />
+          </div>
+        </div>
+      </ScrollArea>
+    </div>
+  );
+
+  // Main render with smooth transitions
+  return (
+    <div className="h-full relative overflow-hidden">
+      {/* Transition container */}
+      <div
+        className={`absolute inset-0 transition-transform duration-300 ease-in-out ${
+          selectedElement
+            ? "transform translate-x-0"
+            : "transform translate-x-0"
+        }`}
+      >
+        {selectedElement ? renderElementProperties() : renderPageSettings()}
+      </div>
     </div>
   );
 }

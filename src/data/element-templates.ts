@@ -167,7 +167,7 @@ export const elementTemplates: ElementTemplate[] = [
       padding: 16,
       margin: 8,
       fontSize: 16,
-      fontWeight: "medium",
+      fontWeight: "normal",
       textAlign: "center",
     },
   },

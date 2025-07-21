@@ -201,7 +201,14 @@ export function Toolbar() {
       <div className="flex items-center justify-between mt-2 text-xs text-gray-500 dark:text-gray-400">
         <div className="flex items-center space-x-4">
           <span>{currentPage.elements.length} elements</span>
-          <span>Last saved: {currentPage.updatedAt.toLocaleTimeString()}</span>
+          <span>
+            Last saved:{" "}
+            {typeof currentPage.updatedAt === "string"
+              ? new Date(currentPage.updatedAt).toLocaleTimeString()
+              : currentPage.updatedAt instanceof Date
+              ? currentPage.updatedAt.toLocaleTimeString()
+              : "Unknown"}
+          </span>
           {isCanvasDragging && (
             <span className="flex items-center space-x-1 text-blue-600 dark:text-blue-400">
               <Move className="w-3 h-3" />

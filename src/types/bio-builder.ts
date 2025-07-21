@@ -36,17 +36,36 @@ export interface BioElement {
   };
 }
 
+export interface BackgroundGradient {
+  type: "linear" | "radial";
+  direction: number; // degrees for linear
+  colors: [string, string];
+}
+
+export interface BackgroundImage {
+  url: string;
+  blur: number; // 0-20px
+  position: "center" | "top" | "bottom";
+  size: "cover" | "contain";
+}
+
+export interface BioPageTheme {
+  backgroundColor: string;
+  primaryColor: string;
+  secondaryColor: string;
+  fontFamily: string;
+  // New background fields
+  backgroundType: "solid" | "gradient" | "image";
+  backgroundGradient?: BackgroundGradient;
+  backgroundImage?: BackgroundImage;
+}
+
 export interface BioPage {
   id: string;
   title: string;
   slug: string;
   elements: BioElement[];
-  theme: {
-    backgroundColor: string;
-    primaryColor: string;
-    secondaryColor: string;
-    fontFamily: string;
-  };
+  theme: BioPageTheme;
   createdAt: Date;
   updatedAt: Date;
 }
