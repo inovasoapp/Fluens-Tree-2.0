@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Image, Palette, SwatchBook } from "lucide-react";
 
 interface BackgroundTypeSelectorProps {
   selectedType: "solid" | "gradient" | "image";
@@ -9,9 +10,13 @@ interface BackgroundTypeSelectorProps {
 }
 
 const backgroundTypes = [
-  { id: "solid", label: "Cor", icon: "⬜" },
-  { id: "gradient", label: "Gradiente", icon: "🌈" },
-  { id: "image", label: "Imagem", icon: "🖼️" },
+  { id: "solid", label: "Cor", icon: <Palette size={18} strokeWidth={1} /> },
+  {
+    id: "gradient",
+    label: "Gradiente",
+    icon: <SwatchBook size={18} strokeWidth={1} />,
+  },
+  { id: "image", label: "Imagem", icon: <Image size={18} strokeWidth={1} /> },
 ] as const;
 
 export function BackgroundTypeSelector({
