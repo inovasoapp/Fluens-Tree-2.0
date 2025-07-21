@@ -209,7 +209,7 @@ export function BackgroundPersistenceDemo() {
                 className={`px-2 py-1 text-xs rounded-full ${
                   autoSaveEnabled
                     ? "bg-blue-100 text-blue-800"
-                    : "bg-gray-100 text-gray-800"
+                    : "bg-zinc-100 text-zinc-800"
                 }`}
               >
                 {autoSaveEnabled ? "Enabled" : "Disabled"}
@@ -232,7 +232,7 @@ export function BackgroundPersistenceDemo() {
               {demoStatus.autoSaveTest ? (
                 <CheckCircle2 className="w-4 h-4 text-green-600" />
               ) : (
-                <XCircle className="w-4 h-4 text-gray-400" />
+                <XCircle className="w-4 h-4 text-zinc-400" />
               )}
               <span className="text-sm">Auto-save (Req 6.1)</span>
             </div>
@@ -240,7 +240,7 @@ export function BackgroundPersistenceDemo() {
               {demoStatus.validationTest ? (
                 <CheckCircle2 className="w-4 h-4 text-green-600" />
               ) : (
-                <XCircle className="w-4 h-4 text-gray-400" />
+                <XCircle className="w-4 h-4 text-zinc-400" />
               )}
               <span className="text-sm">Validation (Req 6.2)</span>
             </div>
@@ -250,7 +250,7 @@ export function BackgroundPersistenceDemo() {
               {demoStatus.migrationTest ? (
                 <CheckCircle2 className="w-4 h-4 text-green-600" />
               ) : (
-                <XCircle className="w-4 h-4 text-gray-400" />
+                <XCircle className="w-4 h-4 text-zinc-400" />
               )}
               <span className="text-sm">Migration (Req 6.3)</span>
             </div>
@@ -258,7 +258,7 @@ export function BackgroundPersistenceDemo() {
               {demoStatus.backupRestoreTest ? (
                 <CheckCircle2 className="w-4 h-4 text-green-600" />
               ) : (
-                <XCircle className="w-4 h-4 text-gray-400" />
+                <XCircle className="w-4 h-4 text-zinc-400" />
               )}
               <span className="text-sm">Backup/Restore (Req 6.4, 6.5)</span>
             </div>

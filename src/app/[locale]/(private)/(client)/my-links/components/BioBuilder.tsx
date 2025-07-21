@@ -19,7 +19,7 @@ export function BioBuilder() {
   return (
     <DragDropContext>
       <div
-        className={`bio-builder-container flex h-full bg-gray-50 dark:bg-gray-900 ${
+        className={`bio-builder-container flex h-full bg-zinc-50 dark:bg-zinc-900 ${
           isDragging ? "select-none" : ""
         }`}
       >
@@ -53,7 +53,7 @@ export function BioBuilder() {
 
         {/* Right Panel - Properties (always show) */}
         <div
-          className="properties-panel bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex-shrink-0"
+          className="properties-panel bg-white dark:bg-zinc-800 border-l border-zinc-200 dark:border-zinc-700 flex-shrink-0"
           style={{ width: rightPanelWidth }}
         >
           <PropertiesPanel />

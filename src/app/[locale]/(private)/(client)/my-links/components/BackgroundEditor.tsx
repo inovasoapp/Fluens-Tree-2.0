@@ -339,7 +339,7 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
               onTypeChange={handleBackgroundTypeChange}
             />
             {/* Debug info - remove in production */}
-            <div className="text-xs text-gray-400 mt-1">
+            <div className="text-xs text-zinc-400 mt-1">
               Tipo atual: {backgroundType} (local:{" "}
               {localBackgroundType || "não definido"})
             </div>

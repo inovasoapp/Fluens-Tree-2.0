@@ -164,7 +164,7 @@ export function ElementRenderer({ element }: ElementRendererProps) {
 
     default:
       return (
-        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded text-center">
+        <div className="p-4 bg-zinc-100 dark:bg-zinc-800 rounded text-center">
           Unknown element type: {type}
         </div>
       );

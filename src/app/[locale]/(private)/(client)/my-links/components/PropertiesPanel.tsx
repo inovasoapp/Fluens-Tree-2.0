@@ -174,10 +174,10 @@ export function PropertiesPanel() {
   const renderElementProperties = () => (
     <div className="h-full flex flex-col bg-card">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <div className="p-4 border-b border-zinc-200 dark:border-zinc-700 flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <span className="text-blue-500">✏️</span>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
             Propriedades do Elemento
           </h2>
         </div>
@@ -197,7 +197,7 @@ export function PropertiesPanel() {
         <div className="p-4 space-y-6">
           {/* Element Type */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
               {selectedElement!.type.charAt(0).toUpperCase() +
                 selectedElement!.type.slice(1)}{" "}
               Element
@@ -221,7 +221,7 @@ export function PropertiesPanel() {
 
           {/* Styling Options */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Styling
             </h3>
 
@@ -393,10 +393,10 @@ export function PropertiesPanel() {
     return (
       <div className="h-full flex flex-col bg-card">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <div className="p-4 border-b border-zinc-200 dark:border-zinc-700 flex flex-col gap-3">
           <div className="flex items-center gap-2">
-            <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <Settings className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
               Configurações da Página
             </h2>
           </div>
@@ -426,8 +426,8 @@ export function PropertiesPanel() {
           <div className="p-4">
             {/* Background Section */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="flex items-center gap-2 pb-2 border-b border-zinc-200 dark:border-zinc-700">
+                <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                   Background
                 </h3>
               </div>
@@ -468,7 +468,7 @@ export function PropertiesPanel() {
       )}
 
       {/* Debug info */}
-      <div className="absolute bottom-2 left-2 text-xs text-gray-400">
+      <div className="absolute bottom-2 left-2 text-xs text-zinc-400">
         {selectedElement
           ? "Modo: Edição de elemento"
           : "Modo: Configurações de fundo"}

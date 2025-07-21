@@ -73,8 +73,8 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
       <div className="p-4">
         <div className="flex items-center justify-between mb-8">
           <Link href="/" className="flex items-center space-x-2">
-            <ChevronLeft size={20} className=" text-gray-400" strokeWidth={1} />
-            <span className="text-sm text-gray-400">Voltar</span>
+            <ChevronLeft size={20} className=" text-zinc-400" strokeWidth={1} />
+            <span className="text-sm text-zinc-400">Voltar</span>
           </Link>
 
           <Button
@@ -82,10 +82,10 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
             className="flex items-center space-x-2"
             onClick={onHide}
           >
-            <span className="text-sm text-gray-400">Esconder</span>
+            <span className="text-sm text-zinc-400">Esconder</span>
             <PanelLeftClose
               size={20}
-              className=" text-gray-400"
+              className=" text-zinc-400"
               strokeWidth={1}
             />
           </Button>
@@ -103,7 +103,7 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
               className={cn(
                 "flex items-center justify-center gap-2 py-2 rounded-none",
                 "data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-blue-500",
-                "data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-400"
+                "data-[state=inactive]:bg-transparent data-[state=inactive]:text-zinc-400"
               )}
             >
               <LayoutGrid className="w-4 h-4" />
@@ -114,7 +114,7 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
               className={cn(
                 "flex items-center justify-center gap-2 py-2 rounded-none",
                 "data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-blue-500",
-                "data-[state=inactive]:bg-transparent data-[state=inactive]:text-gray-400"
+                "data-[state=inactive]:bg-transparent data-[state=inactive]:text-zinc-400"
               )}
             >
               <Image className="w-4 h-4" />
@@ -125,12 +125,12 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
           <TabsContent value="blocks" className="m-0 p-0">
             {/* Search - Only show in blocks tab */}
             <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
               <Input
                 placeholder="Pesquisar elementos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
+                className="pl-10 bg-zinc-800 border-zinc-600 text-white placeholder-zinc-400 focus:border-blue-500"
               />
             </div>
 
@@ -139,7 +139,7 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
               <div className="p-4 space-y-6">
                 {filteredCategories.map((category) => (
                   <div key={category.name}>
-                    <h3 className="text-sm font-medium text-gray-300 mb-3 uppercase tracking-wide">
+                    <h3 className="text-sm font-medium text-zinc-300 mb-3 uppercase tracking-wide">
                       {category.name}
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
@@ -156,10 +156,10 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
 
                 {filteredCategories.length === 0 && searchTerm && (
                   <div className="text-center py-8">
-                    <div className="text-gray-400 mb-2">
+                    <div className="text-zinc-400 mb-2">
                       Nenhum elemento encontrado
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-zinc-500">
                       Tente pesquisar por outro termo
                     </div>
                   </div>

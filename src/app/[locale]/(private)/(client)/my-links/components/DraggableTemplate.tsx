@@ -28,28 +28,28 @@ export function DraggableTemplate({ template, onAdd }: DraggableTemplateProps) {
       case "profile":
         return (
           <div className="space-y-2">
-            <div className="w-8 h-8 bg-gray-600 rounded-full mx-auto"></div>
+            <div className="w-8 h-8 bg-zinc-600 rounded-full mx-auto"></div>
             <div className="space-y-1">
-              <div className="h-2 bg-gray-600 rounded w-3/4 mx-auto"></div>
-              <div className="h-1.5 bg-gray-700 rounded w-1/2 mx-auto"></div>
+              <div className="h-2 bg-zinc-600 rounded w-3/4 mx-auto"></div>
+              <div className="h-1.5 bg-zinc-700 rounded w-1/2 mx-auto"></div>
             </div>
           </div>
         );
       case "link":
         return (
           <div className="space-y-2">
-            <div className="h-8 bg-gray-600 rounded-md flex items-center justify-between px-2">
-              <div className="h-1.5 bg-gray-400 rounded w-1/2"></div>
-              <div className="w-3 h-3 bg-gray-400 rounded"></div>
+            <div className="h-8 bg-zinc-600 rounded-md flex items-center justify-between px-2">
+              <div className="h-1.5 bg-zinc-400 rounded w-1/2"></div>
+              <div className="w-3 h-3 bg-zinc-400 rounded"></div>
             </div>
           </div>
         );
       case "text":
         return (
           <div className="space-y-1">
-            <div className="h-1.5 bg-gray-600 rounded w-full"></div>
-            <div className="h-1.5 bg-gray-600 rounded w-3/4"></div>
-            <div className="h-1.5 bg-gray-600 rounded w-1/2"></div>
+            <div className="h-1.5 bg-zinc-600 rounded w-full"></div>
+            <div className="h-1.5 bg-zinc-600 rounded w-3/4"></div>
+            <div className="h-1.5 bg-zinc-600 rounded w-1/2"></div>
           </div>
         );
       case "social":
@@ -67,20 +67,20 @@ export function DraggableTemplate({ template, onAdd }: DraggableTemplateProps) {
       case "divider":
         return (
           <div className="py-4">
-            <div className="h-px bg-gray-600 w-full"></div>
+            <div className="h-px bg-zinc-600 w-full"></div>
           </div>
         );
       case "image":
         return (
           <div className="space-y-2">
-            <div className="h-12 bg-gray-600 rounded-md flex items-center justify-center">
-              <div className="w-6 h-6 bg-gray-500 rounded"></div>
+            <div className="h-12 bg-zinc-600 rounded-md flex items-center justify-center">
+              <div className="w-6 h-6 bg-zinc-500 rounded"></div>
             </div>
           </div>
         );
       default:
         return (
-          <div className="h-12 bg-gray-600 rounded-md flex items-center justify-center">
+          <div className="h-12 bg-zinc-600 rounded-md flex items-center justify-center">
             <span className="text-2xl">{template.icon}</span>
           </div>
         );
@@ -97,7 +97,7 @@ export function DraggableTemplate({ template, onAdd }: DraggableTemplateProps) {
     >
       <Button
         variant="ghost"
-        className="w-full h-auto p-0 bg-[#2a2a2a] hover:bg-[#333333] border border-gray-700 hover:border-gray-600 cursor-grab active:cursor-grabbing rounded-lg"
+        className="w-full h-auto p-0 bg-[#2a2a2a] hover:bg-[#333333] border border-zinc-700 hover:border-zinc-600 cursor-grab active:cursor-grabbing rounded-lg"
         onClick={() => onAdd(template)}
         {...attributes}
         {...listeners}
@@ -109,13 +109,13 @@ export function DraggableTemplate({ template, onAdd }: DraggableTemplateProps) {
           </div>
 
           {/* Title */}
-          <div className="text-xs text-gray-300 text-center font-medium">
+          <div className="text-xs text-zinc-300 text-center font-medium">
             {template.name}
           </div>
 
           {/* Drag Handle */}
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <GripVertical className="w-3 h-3 text-gray-500" />
+            <GripVertical className="w-3 h-3 text-zinc-500" />
           </div>
         </div>
       </Button>

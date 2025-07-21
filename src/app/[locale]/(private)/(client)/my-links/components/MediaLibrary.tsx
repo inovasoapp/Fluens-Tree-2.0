@@ -146,18 +146,18 @@ export function MediaLibrary() {
             <div key={folder.id} className="mb-2">
               {/* Cabeçalho da pasta */}
               <div
-                className="flex items-center justify-between p-3 bg-gray-800/70 rounded-md cursor-pointer"
+                className="flex items-center justify-between p-3 bg-zinc-800/70 rounded-md cursor-pointer"
                 onClick={() => toggleFolder(folder.id)}
               >
                 <div className="flex items-center">
-                  <Folder className="w-5 h-5 text-gray-400 mr-2" />
+                  <Folder className="w-5 h-5 text-zinc-400 mr-2" />
                   <span className="text-white">{folder.name}</span>
                 </div>
                 <div className="flex items-center">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 text-gray-400 hover:text-white"
+                    className="h-8 w-8 p-0 text-zinc-400 hover:text-white"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleUploadToFolder(folder.id);
@@ -166,9 +166,9 @@ export function MediaLibrary() {
                     <Upload className="w-4 h-4" />
                   </Button>
                   {expandedFolders[folder.id] ? (
-                    <ChevronUp className="w-5 h-5 text-gray-400" />
+                    <ChevronUp className="w-5 h-5 text-zinc-400" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                    <ChevronDown className="w-5 h-5 text-zinc-400" />
                   )}
                 </div>
               </div>
@@ -180,7 +180,7 @@ export function MediaLibrary() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="mb-2 w-full border-dashed border-gray-600 text-gray-400 hover:text-white hover:border-gray-500 bg-gray-800/50"
+                    className="mb-2 w-full border-dashed border-zinc-600 text-zinc-400 hover:text-white hover:border-zinc-500 bg-zinc-800/50"
                     onClick={() => handleUploadToFolder(folder.id)}
                   >
                     <Upload className="w-4 h-4 mr-2" />
@@ -196,7 +196,7 @@ export function MediaLibrary() {
                           "relative aspect-square rounded-md overflow-hidden border-2 cursor-pointer",
                           selectedImage === image.id
                             ? "border-blue-500"
-                            : "border-transparent hover:border-gray-600"
+                            : "border-transparent hover:border-zinc-600"
                         )}
                         onClick={() => setSelectedImage(image.id)}
                       >

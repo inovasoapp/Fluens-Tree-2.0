@@ -31,7 +31,7 @@ export function DropZone({ children }: DropZoneProps) {
       {/* Drop Indicator */}
       {isDragging && draggedTemplate && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-lg border border-blue-300 dark:border-blue-600">
+          <div className="bg-white dark:bg-zinc-800 px-4 py-2 rounded-lg shadow-lg border border-blue-300 dark:border-blue-600">
             <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
               <span className="text-lg">{draggedTemplate.icon}</span>
               <span className="text-sm font-medium">

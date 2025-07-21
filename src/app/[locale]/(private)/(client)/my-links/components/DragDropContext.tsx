@@ -136,14 +136,14 @@ export function DragDropContext({ children }: DragDropContextProps) {
 
     if (draggedTemplate) {
       return (
-        <div className="opacity-80 transform rotate-3 scale-105 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border">
+        <div className="opacity-80 transform rotate-3 scale-105 bg-white dark:bg-zinc-800 p-4 rounded-lg shadow-lg border">
           <div className="flex items-center space-x-3">
             <span className="text-2xl">{draggedTemplate.icon}</span>
             <div>
-              <div className="font-medium text-gray-900 dark:text-gray-100">
+              <div className="font-medium text-zinc-900 dark:text-zinc-100">
                 {draggedTemplate.name}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-zinc-500 dark:text-zinc-400">
                 Drop to add
               </div>
             </div>

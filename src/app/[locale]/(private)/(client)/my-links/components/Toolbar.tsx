@@ -69,7 +69,7 @@ export function Toolbar() {
   const zoomPercentage = Math.round(canvasPosition.scale * 100);
 
   return (
-    <div className="bg-white dark:bg-card border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+    <div className="bg-white dark:bg-card border-b border-zinc-200 dark:border-zinc-700 px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Left Section */}
         <div className="flex items-center space-x-4">
@@ -114,7 +114,7 @@ export function Toolbar() {
               <ZoomOut className="w-4 h-4" />
             </Button>
 
-            <span className="text-sm text-gray-600 dark:text-gray-300 min-w-12 text-center">
+            <span className="text-sm text-zinc-600 dark:text-zinc-300 min-w-12 text-center">
               {zoomPercentage}%
             </span>
 
@@ -145,7 +145,7 @@ export function Toolbar() {
           <Separator orientation="vertical" className="h-6" />
 
           {/* Device Preview Toggle */}
-          <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+          <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1">
             <Button
               variant={previewMode === "mobile" ? "default" : "ghost"}
               size="sm"
@@ -198,7 +198,7 @@ export function Toolbar() {
       </div>
 
       {/* Status Bar */}
-      <div className="flex items-center justify-between mt-2 text-xs text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between mt-2 text-xs text-zinc-500 dark:text-zinc-400">
         <div className="flex items-center space-x-4">
           <span>{currentPage.elements.length} elements</span>
           <span>

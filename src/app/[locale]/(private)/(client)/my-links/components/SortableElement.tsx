@@ -42,7 +42,7 @@ export function SortableElement({
       } ${
         isSelected
           ? "ring-2 ring-blue-500 ring-offset-2"
-          : "hover:ring-1 hover:ring-gray-300"
+          : "hover:ring-1 hover:ring-zinc-300"
       }`}
       onClick={(e) => {
         e.stopPropagation(); // Prevent click from reaching the background
@@ -57,8 +57,8 @@ export function SortableElement({
         {...attributes}
         {...listeners}
       >
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded p-1 shadow-sm">
-          <GripVertical className="w-3 h-3 text-gray-400" />
+        <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded p-1 shadow-sm">
+          <GripVertical className="w-3 h-3 text-zinc-400" />
         </div>
       </div>
 

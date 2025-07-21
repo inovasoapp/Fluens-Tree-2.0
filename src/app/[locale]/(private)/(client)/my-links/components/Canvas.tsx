@@ -221,14 +221,14 @@ export function Canvas() {
                             <div className="text-6xl mb-4 animate-bounce">
                               📱
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                            <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-2">
                               Start building your bio page
                             </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs mb-4">
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-xs mb-4">
                               Drag elements from the left panel to create your
                               personalized bio page
                             </p>
-                            <div className="space-y-2 text-xs text-gray-400 dark:text-gray-500">
+                            <div className="space-y-2 text-xs text-zinc-400 dark:text-zinc-500">
                               <div className="flex items-center justify-center space-x-2">
                                 <span>🖱️</span>
                                 <span>Drag & drop elements</span>
@@ -271,14 +271,14 @@ export function Canvas() {
       <CanvasControls />
 
       {/* Canvas Info */}
-      <div className="absolute bottom-6 left-6 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
-        <div className="text-sm text-gray-500 dark:text-gray-400">
-          <div className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+      <div className="absolute bottom-6 left-6 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-3">
+        <div className="text-sm text-zinc-500 dark:text-zinc-400">
+          <div className="font-medium text-zinc-900 dark:text-zinc-100 mb-1">
             iPhone 15 Pro Preview
           </div>
           <div className="space-y-1 text-xs">
             <div>{currentPage.elements.length} elements</div>
-            <div className="text-gray-400 dark:text-gray-500">
+            <div className="text-zinc-400 dark:text-zinc-500">
               Drag canvas to reposition
             </div>
             {selectedElement && (

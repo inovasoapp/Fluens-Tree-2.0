@@ -38,7 +38,7 @@ export function CanvasControls() {
   return (
     <div className="absolute bottom-6 right-6 flex flex-col space-y-2 z-10">
       {/* Zoom Controls */}
-      <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-gray-700 rounded-lg shadow-lg p-2 flex flex-col space-y-1">
+      <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-2 flex flex-col space-y-1">
         <Button
           variant="ghost"
           size="sm"
@@ -50,7 +50,7 @@ export function CanvasControls() {
           <ZoomIn className="w-4 h-4" />
         </Button>
 
-        <div className="text-xs text-center text-gray-500 dark:text-gray-400 py-1 min-w-12">
+        <div className="text-xs text-center text-zinc-500 dark:text-zinc-400 py-1 min-w-12">
           {zoomPercentage}%
         </div>
 
@@ -67,7 +67,7 @@ export function CanvasControls() {
       </div>
 
       {/* Position Controls */}
-      <div className="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-2 flex flex-col space-y-1">
+      <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-2 flex flex-col space-y-1">
         <Button
           variant="ghost"
           size="sm"
@@ -93,8 +93,8 @@ export function CanvasControls() {
       {(canvasPosition.x !== 0 ||
         canvasPosition.y !== 0 ||
         canvasPosition.scale !== 1) && (
-        <div className="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-2">
-          <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+        <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-2">
+          <div className="text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
             <div>X: {Math.round(canvasPosition.x)}px</div>
             <div>Y: {Math.round(canvasPosition.y)}px</div>
             <div>Scale: {zoomPercentage}%</div>
