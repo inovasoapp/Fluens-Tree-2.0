@@ -15,13 +15,23 @@ import {
 import { BackgroundErrorBoundary } from "./BackgroundErrorBoundary";
 
 export function Canvas() {
-  const { currentPage, selectedElement, setSelectedElement } =
+  const { currentPage, selectedElement, setSelectedElement, centerCanvas } =
     useBioBuilderStore();
 
   const [backgroundError, setBackgroundError] = useState(false);
   const [backgroundStyle, setBackgroundStyle] = useState<React.CSSProperties>(
     {}
   );
+
+  // Center canvas on mount and when page changes
+  useEffect(() => {
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      centerCanvas();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [centerCanvas, currentPage?.id]); // Re-center when page changes
 
   // Removed global click handler as it was causing issues with element editing
 
@@ -123,9 +133,12 @@ export function Canvas() {
       )}
 
       <DraggableCanvas>
-        <div className="flex items-center justify-center w-full h-full">
+        <div
+          className="w-full h-full flex items-center justify-center p-8"
+          style={{ minHeight: "100vh" }}
+        >
           {/* iPhone Mockup */}
-          <div className="relative">
+          <div className="relative" style={{ margin: "auto" }}>
             {/* iPhone Frame */}
             <div className="iphone-mockup relative w-[375px] h-[812px] bg-black rounded-[60px] p-2 shadow-2xl">
               {/* Screen */}

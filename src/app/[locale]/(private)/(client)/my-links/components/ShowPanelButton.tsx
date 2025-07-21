@@ -1,6 +1,6 @@
 "use client";
 
-import { PanelLeft } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ShowPanelButtonProps {
@@ -16,7 +16,7 @@ export function ShowPanelButton({ onClick }: ShowPanelButtonProps) {
         className="dark:bg-zinc-900 dark:hover:bg-zinc-800 text-white p-1 border-r  border-zinc-800 transition-all duration-200 shadow-lg hover:shadow-xl h-full w-8 flex items-center justify-center"
         title="Mostrar painel de elementos"
       >
-        <PanelLeft size={18} strokeWidth={1.5} className="text-gray-300" />
+        <ChevronRight size={18} strokeWidth={1.5} className="text-gray-300" />
       </Button>
     </div>
   );

@@ -263,7 +263,15 @@ export const useBioBuilderStore = create<BioBuilderState>()(
 
       setCurrentPage: (page) => {
         const migratedPage = migratePageBackgroundConfig(page);
-        set({ currentPage: migratedPage });
+        set({
+          currentPage: migratedPage,
+          // Reset canvas position to center when loading a new page
+          canvasPosition: {
+            x: 0,
+            y: 0,
+            scale: 1,
+          },
+        });
         triggerAutoSave(get);
       },
       setSelectedElement: (element) => set({ selectedElement: element }),

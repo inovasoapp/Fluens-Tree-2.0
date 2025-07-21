@@ -14,6 +14,7 @@ export function DraggableCanvas({ children }: DraggableCanvasProps) {
     isCanvasDragging,
     setIsCanvasDragging,
     isDragging, // Element drag state
+    centerCanvas,
   } = useBioBuilderStore();
 
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -25,6 +26,18 @@ export function DraggableCanvas({ children }: DraggableCanvasProps) {
     y: number;
   } | null>(null);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
+
+  // Ensure canvas is centered on mount
+  useEffect(() => {
+    // Only center if position is at default (0,0,1) - meaning it hasn't been moved by user
+    if (
+      canvasPosition.x === 0 &&
+      canvasPosition.y === 0 &&
+      canvasPosition.scale === 1
+    ) {
+      centerCanvas();
+    }
+  }, []); // Run only once on mount
 
   // Handle keyboard events for space key
   useEffect(() => {
