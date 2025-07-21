@@ -6,7 +6,7 @@ import { AlertCircle, CheckCircle2, X } from "lucide-react";
 import { BackgroundTypeSelector } from "./BackgroundTypeSelector";
 import { SolidColorPicker } from "./SolidColorPicker";
 import { GradientEditor } from "./GradientEditor";
-import { ImageUploader } from "./ImageUploader";
+import { ImageSourceSelector } from "./ImageSourceSelector";
 import { BlurControl } from "./BlurControl";
 import { BackgroundErrorBoundary } from "./BackgroundErrorBoundary";
 import { useBioBuilderStore } from "@/stores/bio-builder-store";
@@ -371,9 +371,9 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
           {/* Show image UI when either the store or local state says "image" */}
           {(backgroundType === "image" || localBackgroundType === "image") && (
             <div className="space-y-4">
-              <BackgroundErrorBoundary section="Upload de Imagem">
-                <ImageUploader
-                  onImageUpload={handleImageUpload}
+              <BackgroundErrorBoundary section="Seleção de Imagem">
+                <ImageSourceSelector
+                  onImageSelect={handleImageUpload}
                   currentImage={backgroundImage?.url}
                   onImageRemove={handleImageRemove}
                   onError={handleImageUploadError}
