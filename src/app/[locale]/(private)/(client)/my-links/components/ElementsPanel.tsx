@@ -19,7 +19,11 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function ElementsPanel() {
+interface ElementsPanelProps {
+  onHide?: () => void;
+}
+
+export function ElementsPanel({ onHide }: ElementsPanelProps) {
   const { addElementFromTemplate } = useBioBuilderStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"blocks" | "library">("blocks");
@@ -73,7 +77,11 @@ export function ElementsPanel() {
             <span className="text-sm text-gray-400">Voltar</span>
           </Link>
 
-          <Button variant="ghost" className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            className="flex items-center space-x-2"
+            onClick={onHide}
+          >
             <span className="text-sm text-gray-400">Esconder</span>
             <PanelLeftClose
               size={20}

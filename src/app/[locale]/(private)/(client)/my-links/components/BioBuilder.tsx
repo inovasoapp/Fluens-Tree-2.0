@@ -6,12 +6,14 @@ import { Canvas } from "./Canvas";
 import { PropertiesPanel } from "./PropertiesPanel";
 import { Toolbar } from "./Toolbar";
 import { DragDropContext } from "./DragDropContext";
+import { ShowPanelButton } from "./ShowPanelButton";
 import { useBioBuilderStore } from "@/stores/bio-builder-store";
 import "../bio-builder.css";
 
 export function BioBuilder() {
   const [leftPanelWidth, setLeftPanelWidth] = useState(280);
   const [rightPanelWidth, setRightPanelWidth] = useState(320);
+  const [isElementsPanelVisible, setIsElementsPanelVisible] = useState(true);
   const { selectedElement, isDragging } = useBioBuilderStore();
 
   return (
@@ -22,15 +24,22 @@ export function BioBuilder() {
         }`}
       >
         {/* Left Panel - Elements */}
-        <div
-          className="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 min-w-[320px]"
-          style={{ width: leftPanelWidth }}
-        >
-          <ElementsPanel />
-        </div>
+        {isElementsPanelVisible && (
+          <div
+            className="bg-white dark:bg-zinc-800 border-r border-zinc-200 dark:border-zinc-700 flex-shrink-0 min-w-[320px] animate-in slide-in-from-left duration-300"
+            style={{ width: leftPanelWidth }}
+          >
+            <ElementsPanel onHide={() => setIsElementsPanelVisible(false)} />
+          </div>
+        )}
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
+        {/* Show Panel Button - positioned absolutely when panel is hidden */}
+        {!isElementsPanelVisible && (
+          <ShowPanelButton onClick={() => setIsElementsPanelVisible(true)} />
+        )}
+
+        {/* Main Content Area - expands when left panel is hidden */}
+        <div className="flex-1 flex flex-col transition-all duration-300 ease-in-out">
           {/* Toolbar */}
           <div className="toolbar-glass">
             <Toolbar />
