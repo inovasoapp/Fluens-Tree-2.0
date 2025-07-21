@@ -4,12 +4,20 @@ import { elementTemplates } from "@/data/element-templates";
 import { useBioBuilderStore } from "@/stores/bio-builder-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DraggableTemplate } from "./DraggableTemplate";
-import { ChevronLeft, Search, LayoutGrid, Image } from "lucide-react";
+import {
+  ChevronLeft,
+  Search,
+  LayoutGrid,
+  Image,
+  PanelLeftClose,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MediaLibrary } from "./MediaLibrary";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function ElementsPanel() {
   const { addElementFromTemplate } = useBioBuilderStore();
@@ -59,15 +67,20 @@ export function ElementsPanel() {
     <div className="h-full flex flex-col bg-zinc-900 text-white">
       {/* Header */}
       <div className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <ChevronLeft className="w-4 h-4 text-gray-400" />
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/" className="flex items-center space-x-2">
+            <ChevronLeft size={20} className=" text-gray-400" strokeWidth={1} />
             <span className="text-sm text-gray-400">Voltar</span>
-          </div>
-          <div className="flex items-center space-x-2">
+          </Link>
+
+          <Button variant="ghost" className="flex items-center space-x-2">
             <span className="text-sm text-gray-400">Esconder</span>
-            <div className="w-6 h-3 bg-gray-600 rounded-full"></div>
-          </div>
+            <PanelLeftClose
+              size={20}
+              className=" text-gray-400"
+              strokeWidth={1}
+            />
+          </Button>
         </div>
 
         {/* Tabs */}

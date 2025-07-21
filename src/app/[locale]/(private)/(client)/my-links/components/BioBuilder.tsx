@@ -23,7 +23,7 @@ export function BioBuilder() {
       >
         {/* Left Panel - Elements */}
         <div
-          className="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-shrink-0"
+          className="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 min-w-[320px]"
           style={{ width: leftPanelWidth }}
         >
           <ElementsPanel />
