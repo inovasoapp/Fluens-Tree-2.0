@@ -81,6 +81,9 @@ export type GradientDirectionName = keyof typeof GRADIENT_DIRECTIONS;
 /**
  * Generates CSS styles for background based on theme configuration with error handling
  */
+// Keep track of the last valid background type to prevent unwanted reversions
+let lastValidBackgroundType: string | null = null;
+
 export const getBackgroundStyle = (
   theme: BioPageTheme
 ): React.CSSProperties => {
@@ -93,6 +96,26 @@ export const getBackgroundStyle = (
 
     const backgroundType = theme.backgroundType || "solid";
     const fallbackColor = theme.backgroundColor || "#ffffff";
+
+    // Update our last valid background type
+    if (
+      backgroundType &&
+      (backgroundType === "solid" ||
+        backgroundType === "gradient" ||
+        backgroundType === "image")
+    ) {
+      lastValidBackgroundType = backgroundType;
+      console.log(
+        `background-utils: Updated last valid background type to ${backgroundType}`
+      );
+    }
+
+    // Special handling for image type to prevent unwanted reversions
+    if (backgroundType === "image" && !theme.backgroundImage?.url) {
+      console.log(
+        "background-utils: Image type with no URL, maintaining image type"
+      );
+    }
 
     switch (backgroundType) {
       case "solid":
@@ -147,17 +170,31 @@ export const getBackgroundStyle = (
       case "image":
         if (!theme.backgroundImage) {
           console.warn(
-            "Image configuration missing, falling back to solid color"
+            "Image configuration missing, using fallback color but MAINTAINING image type"
           );
-          return { backgroundColor: fallbackColor };
+          // Return a simple background color without changing the type
+          // Add a custom property to indicate this is an image background without an image
+          return {
+            backgroundColor: fallbackColor,
+            // This custom property won't affect rendering but helps identify the background type
+            "--background-type": "image-pending" as any,
+          };
         }
 
         const { url, blur, position, size } = theme.backgroundImage;
 
         // Validate image URL
         if (!url || typeof url !== "string" || url.trim() === "") {
-          console.warn("Invalid image URL, falling back to solid color");
-          return { backgroundColor: fallbackColor };
+          console.warn(
+            "Invalid image URL, using fallback color but MAINTAINING image type"
+          );
+          // Return a simple background color without changing the type
+          // Add a custom property to indicate this is an image background without an image
+          return {
+            backgroundColor: fallbackColor,
+            // This custom property won't affect rendering but helps identify the background type
+            "--background-type": "image-pending" as any,
+          };
         }
 
         // Validate blur value

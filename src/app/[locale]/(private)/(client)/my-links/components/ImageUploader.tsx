@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Upload, X, AlertCircle, Image as ImageIcon } from "lucide-react";
 
@@ -35,6 +35,24 @@ export function ImageUploader({
   );
   const [imageLoadError, setImageLoadError] = useState<boolean>(false);
   const [retryCount, setRetryCount] = useState<number>(0);
+  // Add state to track if component is mounted
+  const [isMounted, setIsMounted] = useState(true);
+
+  // Use ref for tracking mounted state to avoid closure issues in async callbacks
+  const isMountedRef = useRef(true);
+
+  // Set up effect to track component mounting state
+  useEffect(() => {
+    // Set mounted state to true when component mounts
+    setIsMounted(true);
+    isMountedRef.current = true;
+
+    // Clean up function to set mounted state to false when component unmounts
+    return () => {
+      setIsMounted(false);
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -44,7 +62,8 @@ export function ImageUploader({
     if (!ACCEPTED_TYPES.includes(file.type)) {
       return {
         type: "format",
-        message: "Formato não suportado. Use JPG, PNG ou WebP.",
+        message:
+          "Formato não suportado. Use JPG, PNG ou WebP. O tipo de fundo 'imagem' será mantido para você tentar novamente.",
         recoverable: true,
       };
     }
@@ -52,7 +71,8 @@ export function ImageUploader({
     if (file.size > MAX_FILE_SIZE) {
       return {
         type: "size",
-        message: "Arquivo muito grande. Máximo 5MB.",
+        message:
+          "Arquivo muito grande. Máximo 5MB. O tipo de fundo 'imagem' será mantido para você tentar novamente com um arquivo menor.",
         recoverable: true,
       };
     }
@@ -68,14 +88,16 @@ export function ImageUploader({
         if (img.width < 100 || img.height < 100) {
           resolve({
             type: "format",
-            message: "Imagem muito pequena. Mínimo 100x100 pixels.",
+            message:
+              "Imagem muito pequena. Mínimo 100x100 pixels. O tipo de fundo 'imagem' será mantido para você tentar novamente.",
             recoverable: true,
           });
         } else if (img.width > 4000 || img.height > 4000) {
           // Check maximum dimensions for performance
           resolve({
             type: "size",
-            message: "Imagem muito grande. Máximo 4000x4000 pixels.",
+            message:
+              "Imagem muito grande. Máximo 4000x4000 pixels. O tipo de fundo 'imagem' será mantido para você tentar novamente com uma imagem menor.",
             recoverable: true,
           });
         } else {
@@ -87,7 +109,8 @@ export function ImageUploader({
         URL.revokeObjectURL(url);
         resolve({
           type: "format",
-          message: "Arquivo corrompido ou não é uma imagem válida.",
+          message:
+            "Arquivo corrompido ou não é uma imagem válida. O tipo de fundo 'imagem' será mantido para você tentar novamente.",
           recoverable: true,
         });
       };
@@ -125,38 +148,76 @@ export function ImageUploader({
 
   const handleFileUpload = useCallback(
     async (file: File) => {
+      // Log the start of the upload process for debugging
+      console.log("Starting image upload process");
+
+      // Only update state if component is still mounted
+      if (!isMountedRef.current) {
+        console.log("Component unmounted, aborting upload");
+        return;
+      }
+
       setError(null);
       setImageLoadError(false);
 
       const validationError = await validateFileAsync(file);
       if (validationError) {
-        setError(validationError);
-        onError?.(validationError.message);
+        // Check if component is still mounted before updating state
+        if (isMountedRef.current) {
+          setError(validationError);
+          onError?.(validationError.message);
+        }
         return;
       }
+
+      // Check if component is still mounted before updating state
+      if (!isMountedRef.current) return;
 
       setIsUploading(true);
       setUploadProgress(0);
 
       try {
         const imageUrl = await simulateUpload(file);
-        setPreviewUrl(imageUrl);
-        setRetryCount(0); // Reset retry count on successful upload
-        onImageUpload(imageUrl);
+
+        // Check if component is still mounted before updating state
+        if (isMountedRef.current) {
+          console.log(
+            "Upload successful, updating preview and notifying parent"
+          );
+          setPreviewUrl(imageUrl);
+          setRetryCount(0); // Reset retry count on successful upload
+
+          // Notify parent component about the successful upload
+          // This will trigger the BackgroundEditor's handleImageUpload
+          onImageUpload(imageUrl);
+        } else {
+          console.log("Component unmounted during upload, cleanup needed");
+          // If component unmounted during upload, we should clean up the blob URL
+          if (imageUrl.startsWith("blob:")) {
+            URL.revokeObjectURL(imageUrl);
+          }
+        }
       } catch (err) {
-        const errorMessage = "Erro ao fazer upload. Tente novamente.";
-        setError({
-          type: "network",
-          message: errorMessage,
-          recoverable: true,
-        });
-        onError?.(errorMessage);
+        // Check if component is still mounted before updating state
+        if (isMountedRef.current) {
+          console.log("Upload failed:", err);
+          const errorMessage = "Erro ao fazer upload. Tente novamente.";
+          setError({
+            type: "network",
+            message: errorMessage,
+            recoverable: true,
+          });
+          onError?.(errorMessage);
+        }
       } finally {
-        setIsUploading(false);
-        setUploadProgress(0);
+        // Check if component is still mounted before updating state
+        if (isMountedRef.current) {
+          setIsUploading(false);
+          setUploadProgress(0);
+        }
       }
     },
-    [onImageUpload]
+    [onImageUpload, onError]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -376,6 +437,17 @@ export function ImageUploader({
               Erro no upload
             </p>
             <p className="text-xs text-destructive/80 mt-1">{error.message}</p>
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="text-xs px-2 py-1 bg-destructive/20 hover:bg-destructive/30 text-destructive rounded transition-colors"
+              >
+                Tentar novamente
+              </button>
+              <span className="text-xs text-destructive/70">
+                O tipo de fundo "imagem" será mantido
+              </span>
+            </div>
           </div>
           {error.recoverable && (
             <button

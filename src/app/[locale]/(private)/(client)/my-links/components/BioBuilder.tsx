@@ -42,15 +42,13 @@ export function BioBuilder() {
           </div>
         </div>
 
-        {/* Right Panel - Properties (only show when element is selected) */}
-        {selectedElement && (
-          <div
-            className="properties-panel bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex-shrink-0"
-            style={{ width: rightPanelWidth }}
-          >
-            <PropertiesPanel />
-          </div>
-        )}
+        {/* Right Panel - Properties (always show) */}
+        <div
+          className="properties-panel bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex-shrink-0"
+          style={{ width: rightPanelWidth }}
+        >
+          <PropertiesPanel />
+        </div>
 
         {/* Drag Overlay Styles */}
         {isDragging && (

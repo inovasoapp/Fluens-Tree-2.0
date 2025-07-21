@@ -467,6 +467,29 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         const state = get();
         if (!state.currentPage) return;
 
+        // Log the background type change for debugging
+        console.log(
+          `Store: Changing background type from ${state.currentPage.theme.backgroundType} to ${backgroundType}`
+        );
+
+        // Special handling for image type to prevent unwanted reversions
+        if (backgroundType === "image") {
+          // If switching to image type, we want to preserve this choice
+          // even if there's no image URL yet (user will upload one)
+          console.log(
+            "Store: Setting background type to image, preserving this choice for upload"
+          );
+        } else if (
+          state.currentPage.theme.backgroundType === "image" &&
+          state.currentPage.theme.backgroundImage?.url
+        ) {
+          // If switching away from image type when we have an image URL,
+          // log this intentional change for debugging
+          console.log(
+            "Store: Intentionally changing away from image background with configured image"
+          );
+        }
+
         // Monitor background changes for persistence events
         import("@/lib/background-persistence")
           .then(({ monitorBackgroundChanges }) => {
@@ -524,12 +547,34 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         const state = get();
         if (!state.currentPage) return;
 
+        // Log the image update for debugging
+        console.log(
+          `Store: Updating background image with URL: ${image.url.substring(
+            0,
+            30
+          )}...`
+        );
+        console.log(
+          `Store: Current background type: ${state.currentPage.theme.backgroundType}`
+        );
+
+        // Always ensure the background type is set to "image" when updating an image
+        // This is crucial to prevent any race conditions or inconsistent state
+        const backgroundType = "image" as const;
+
+        // If the current type is not "image", log this correction
+        if (state.currentPage.theme.backgroundType !== backgroundType) {
+          console.log(
+            `Store: Correcting background type from ${state.currentPage.theme.backgroundType} to ${backgroundType}`
+          );
+        }
+
         // Monitor background changes for persistence events
         import("@/lib/background-persistence")
           .then(({ monitorBackgroundChanges }) => {
             monitorBackgroundChanges(state.currentPage!.theme, {
               ...state.currentPage!.theme,
-              backgroundType: "image" as const,
+              backgroundType,
               backgroundImage: image,
             });
           })
@@ -537,18 +582,23 @@ export const useBioBuilderStore = create<BioBuilderState>()(
             console.warn("Failed to monitor background changes:", error);
           });
 
+        // Create updated page with consistent image background configuration
         const updatedPage = {
           ...state.currentPage,
           theme: {
             ...state.currentPage.theme,
-            backgroundType: "image" as const,
+            backgroundType, // Always set to "image"
             backgroundImage: image,
           },
           updatedAt: new Date(),
         };
 
+        // Update the store and trigger auto-save
         set({ currentPage: updatedPage });
         triggerAutoSave(get);
+
+        // Log success for debugging
+        console.log("Store: Background image updated successfully");
       },
 
       // Persistence methods

@@ -44,7 +44,10 @@ export function SortableElement({
           ? "ring-2 ring-blue-500 ring-offset-2"
           : "hover:ring-1 hover:ring-gray-300"
       }`}
-      onClick={() => onSelect(element)}
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent click from reaching the background
+        onSelect(element);
+      }}
     >
       {/* Drag Handle */}
       <div

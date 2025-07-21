@@ -23,11 +23,65 @@ export function Canvas() {
     {}
   );
 
+  // Removed global click handler as it was causing issues with element editing
+
+  // Track the last valid background type to prevent unwanted reversions
+  const [lastBackgroundType, setLastBackgroundType] = useState<string | null>(
+    null
+  );
+
   // Handle background style with error handling
   useEffect(() => {
     if (!currentPage?.theme) return;
 
     try {
+      const currentType = currentPage.theme.backgroundType;
+
+      // Log the current background type for debugging
+      console.log(`Canvas: Rendering background type: ${currentType}`);
+
+      // Update our last background type if this is a valid type
+      if (
+        currentType &&
+        (currentType === "solid" ||
+          currentType === "gradient" ||
+          currentType === "image")
+      ) {
+        setLastBackgroundType(currentType);
+        console.log(`Canvas: Updated last background type to ${currentType}`);
+      }
+
+      // If the background type is "image" but there's no image URL, we should still
+      // maintain the "image" type and show the upload UI instead of reverting to solid
+      if (currentType === "image" && !currentPage.theme.backgroundImage?.url) {
+        console.log(
+          "Canvas: Image background selected but no image URL yet, maintaining image type"
+        );
+        // Use a placeholder style that doesn't change the background type
+        setBackgroundStyle({
+          backgroundColor: currentPage.theme.backgroundColor || "#ffffff",
+        });
+        setBackgroundError(false);
+        return;
+      }
+
+      // If we have a last background type of "image" but the current type is not "image",
+      // and we're in the middle of an upload (no URL yet), maintain the "image" type
+      if (
+        lastBackgroundType === "image" &&
+        currentType !== "image" &&
+        !currentPage.theme.backgroundImage?.url
+      ) {
+        console.log(
+          "Canvas: Preventing reversion from image type during upload"
+        );
+        setBackgroundStyle({
+          backgroundColor: currentPage.theme.backgroundColor || "#ffffff",
+        });
+        setBackgroundError(false);
+        return;
+      }
+
       const style = getBackgroundStyle(currentPage.theme);
       setBackgroundStyle(style);
       setBackgroundError(false);
@@ -36,7 +90,7 @@ export function Canvas() {
       setBackgroundError(true);
       setBackgroundStyle(getErrorFallbackStyle());
     }
-  }, [currentPage?.theme]);
+  }, [currentPage?.theme, lastBackgroundType]);
 
   // Handle image load errors
   const handleBackgroundImageError = useCallback(() => {
@@ -55,6 +109,19 @@ export function Canvas() {
 
   return (
     <div className="relative w-full h-full bg-background">
+      {/* Deselect Button */}
+      {selectedElement && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+          <button
+            onClick={() => setSelectedElement(null)}
+            className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors flex items-center gap-2 shadow-lg"
+          >
+            <span>✏️</span>
+            <span>Editar fundo do canvas</span>
+          </button>
+        </div>
+      )}
+
       <DraggableCanvas>
         <div className="flex items-center justify-center w-full h-full">
           {/* iPhone Mockup */}
@@ -68,6 +135,12 @@ export function Canvas() {
                   <div
                     className="absolute inset-0 w-full h-full"
                     style={backgroundStyle}
+                    onClick={() => {
+                      // Deselect the current element when clicking on the background
+                      if (selectedElement) {
+                        setSelectedElement(null);
+                      }
+                    }}
                   >
                     {/* Hidden image for error detection when using image backgrounds */}
                     {currentPage.theme.backgroundType === "image" &&
@@ -105,7 +178,16 @@ export function Canvas() {
                   {/* Content Area */}
                   <ScrollArea className="h-full pt-11 custom-scrollbar">
                     <DropZone>
-                      <div className="p-4 space-y-2 min-h-full">
+                      <div
+                        className="p-4 space-y-2 min-h-full"
+                        onClick={(e) => {
+                          // Check if the click was directly on this div (not on a child element)
+                          if (e.target === e.currentTarget) {
+                            // Deselect the current element
+                            setSelectedElement(null);
+                          }
+                        }}
+                      >
                         {currentPage.elements
                           .sort((a, b) => a.position - b.position)
                           .map((element) => (
@@ -119,7 +201,10 @@ export function Canvas() {
 
                         {/* Empty State */}
                         {currentPage.elements.length === 0 && (
-                          <div className="flex flex-col items-center justify-center h-96 text-center">
+                          <div
+                            className="flex flex-col items-center justify-center h-96 text-center"
+                            onClick={() => setSelectedElement(null)}
+                          >
                             <div className="text-6xl mb-4 animate-bounce">
                               📱
                             </div>
@@ -142,6 +227,13 @@ export function Canvas() {
                               <div className="flex items-center justify-center space-x-2">
                                 <span>✏️</span>
                                 <span>Select to edit properties</span>
+                              </div>
+                              <div className="flex items-center justify-center space-x-2 mt-4 text-blue-500">
+                                <span>💡</span>
+                                <span>
+                                  Click anywhere on the canvas to show
+                                  background settings
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -176,6 +268,14 @@ export function Canvas() {
             <div className="text-gray-400 dark:text-gray-500">
               Drag canvas to reposition
             </div>
+            {selectedElement && (
+              <button
+                onClick={() => setSelectedElement(null)}
+                className="mt-2 px-2 py-1 bg-blue-500 text-white rounded-md text-xs hover:bg-blue-600 transition-colors"
+              >
+                Mostrar configurações de fundo
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -36,12 +36,27 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Add local state to track the selected background type
+  // This ensures we maintain the type even if the store gets updated elsewhere
+  const [localBackgroundType, setLocalBackgroundType] = useState<
+    "solid" | "gradient" | "image" | null
+  >(null);
+
   // Get current theme values with fallbacks
   const theme = currentPage?.theme;
-  const backgroundType = theme?.backgroundType || "solid";
+  // Use local background type if set, otherwise use the one from the theme
+  const backgroundType =
+    localBackgroundType || theme?.backgroundType || "solid";
   const backgroundColor = theme?.backgroundColor || "#ffffff";
   const backgroundGradient = theme?.backgroundGradient;
   const backgroundImage = theme?.backgroundImage;
+
+  // Sync local background type with theme when theme changes
+  useEffect(() => {
+    if (theme?.backgroundType && !localBackgroundType) {
+      setLocalBackgroundType(theme.backgroundType);
+    }
+  }, [theme?.backgroundType, localBackgroundType]);
 
   // Clear messages after timeout
   useEffect(() => {
@@ -84,6 +99,15 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
   const handleBackgroundTypeChange = useCallback(
     (newType: "solid" | "gradient" | "image") => {
       withErrorHandling(() => {
+        // Log the type change for debugging
+        console.log(
+          `Changing background type from ${backgroundType} to ${newType}`
+        );
+
+        // IMPORTANT: Update our local state first to ensure UI consistency
+        setLocalBackgroundType(newType);
+
+        // Update the background type in the store
         updateBackgroundType(newType);
 
         // Set default values for new background types
@@ -93,16 +117,24 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
             direction: 45,
             colors: ["#667eea", "#764ba2"],
           });
-        } else if (newType === "image" && !backgroundImage) {
-          // Don't set default image, let user upload one
+        }
+
+        // For image type, we don't need to set a default image
+        // But we should log that we're waiting for the user to upload one
+        if (newType === "image") {
+          console.log(
+            "Image type selected, waiting for user to upload an image"
+          );
+          // Force the background type to "image" in our local state
+          setLocalBackgroundType("image");
         }
       }, "Tipo de fundo");
     },
     [
       updateBackgroundType,
       updateBackgroundGradient,
+      backgroundType,
       backgroundGradient,
-      backgroundImage,
       withErrorHandling,
     ]
   );
@@ -136,6 +168,22 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
           throw new Error("URL da imagem inválida");
         }
 
+        // Log the current background type before making changes
+        console.log(
+          `Current background type before image upload: ${backgroundType}`
+        );
+
+        // IMPORTANT: Ensure our local state is set to "image" first
+        setLocalBackgroundType("image");
+
+        // First, ensure the background type is set to "image"
+        // This is crucial to prevent any race conditions where the type might be reverted
+        if (backgroundType !== "image") {
+          console.log("Setting background type to image before updating image");
+          updateBackgroundType("image");
+        }
+
+        // Create the new background image configuration
         const newBackgroundImage: BackgroundImage = {
           url: imageUrl,
           blur: 0,
@@ -143,15 +191,28 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
           size: "cover",
         };
 
+        // Update the background image in the store
+        // The updateBackgroundImage function will also set the type to "image"
         updateBackgroundImage(newBackgroundImage);
+
+        // Log success for debugging
+        console.log("Image upload successful, background type set to image");
       }, "Imagem de fundo");
     },
-    [updateBackgroundImage, withErrorHandling]
+    [
+      updateBackgroundImage,
+      updateBackgroundType,
+      backgroundType,
+      withErrorHandling,
+    ]
   );
 
   // Image remove handler
   const handleImageRemove = useCallback(() => {
     withErrorHandling(() => {
+      // Update our local state first
+      setLocalBackgroundType("solid");
+
       // Switch back to solid color when image is removed
       updateBackgroundType("solid");
     }, "Remoção da imagem");
@@ -223,6 +284,12 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
                 Erro no Editor de Fundo
               </p>
               <p className="text-xs text-destructive/80">{error.message}</p>
+              {backgroundType === "image" && (
+                <p className="text-xs text-destructive/70 mt-1 italic">
+                  O tipo de fundo "imagem" será mantido enquanto você resolve
+                  este problema.
+                </p>
+              )}
             </div>
             <button
               onClick={clearError}
@@ -271,12 +338,19 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
               selectedType={backgroundType}
               onTypeChange={handleBackgroundTypeChange}
             />
+            {/* Debug info - remove in production */}
+            <div className="text-xs text-gray-400 mt-1">
+              Tipo atual: {backgroundType} (local:{" "}
+              {localBackgroundType || "não definido"})
+            </div>
           </div>
         </BackgroundErrorBoundary>
 
         {/* Background Configuration */}
         <div className="space-y-4">
-          {backgroundType === "solid" && (
+          {/* Force the image UI to be shown when localBackgroundType is "image", 
+              regardless of what the store says */}
+          {backgroundType === "solid" && localBackgroundType !== "image" && (
             <BackgroundErrorBoundary section="Cor Sólida">
               <SolidColorPicker
                 color={backgroundColor}
@@ -285,7 +359,7 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
             </BackgroundErrorBoundary>
           )}
 
-          {backgroundType === "gradient" && (
+          {backgroundType === "gradient" && localBackgroundType !== "image" && (
             <BackgroundErrorBoundary section="Gradiente">
               <GradientEditor
                 gradient={backgroundGradient}
@@ -294,7 +368,8 @@ export function BackgroundEditor({ className }: BackgroundEditorProps) {
             </BackgroundErrorBoundary>
           )}
 
-          {backgroundType === "image" && (
+          {/* Show image UI when either the store or local state says "image" */}
+          {(backgroundType === "image" || localBackgroundType === "image") && (
             <div className="space-y-4">
               <BackgroundErrorBoundary section="Upload de Imagem">
                 <ImageUploader

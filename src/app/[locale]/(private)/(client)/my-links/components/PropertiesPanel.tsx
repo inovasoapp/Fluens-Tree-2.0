@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, X, Settings } from "lucide-react";
+import { Trash2, Settings } from "lucide-react";
 import { BackgroundEditor } from "./BackgroundEditor";
 
 export function PropertiesPanel() {
@@ -175,16 +175,21 @@ export function PropertiesPanel() {
     <div className="h-full flex flex-col bg-card">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Element Properties
-        </h2>
+        <div className="flex items-center gap-2">
+          <span className="text-blue-500">✏️</span>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Propriedades do Elemento
+          </h2>
+        </div>
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={() => setSelectedElement(null)}
-          title="Back to page settings"
+          title="Voltar para configurações da página"
+          className="flex items-center gap-1"
         >
-          <X className="w-4 h-4" />
+          <Settings className="w-3.5 h-3.5" />
+          <span className="text-xs">Editar fundo</span>
         </Button>
       </div>
 
@@ -379,34 +384,61 @@ export function PropertiesPanel() {
   );
 
   // Render page settings panel (background editor)
-  const renderPageSettings = () => (
-    <div className="h-full flex flex-col bg-card">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Page Settings
-          </h2>
-        </div>
-      </div>
+  const renderPageSettings = () => {
+    // Get current page from the store that was already initialized at the component level
+    const currentPage = useBioBuilderStore.getState().currentPage;
+    const hasElements =
+      currentPage?.elements && currentPage.elements.length > 0;
 
-      <ScrollArea className="flex-1">
-        <div className="p-4">
-          {/* Background Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Background
-              </h3>
-            </div>
-
-            <BackgroundEditor />
+    return (
+      <div className="h-full flex flex-col bg-card">
+        {/* Header */}
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Configurações da Página
+            </h2>
           </div>
+
+          {/* Show element selection button if there are elements */}
+          {hasElements && (
+            <div className="flex items-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  // Find the first element and select it
+                  const firstElement = currentPage?.elements[0];
+                  if (firstElement) {
+                    setSelectedElement(firstElement);
+                  }
+                }}
+                className="text-xs"
+              >
+                <span className="mr-1">✏️</span> Editar elementos
+              </Button>
+            </div>
+          )}
         </div>
-      </ScrollArea>
-    </div>
-  );
+
+        <ScrollArea className="flex-1">
+          <div className="p-4">
+            {/* Background Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Background
+                </h3>
+              </div>
+
+              <BackgroundEditor />
+            </div>
+          </div>
+        </ScrollArea>
+      </div>
+    );
+  };
 
   // Main render with smooth transitions
   return (
@@ -420,6 +452,26 @@ export function PropertiesPanel() {
         }`}
       >
         {selectedElement ? renderElementProperties() : renderPageSettings()}
+      </div>
+
+      {/* Mode toggle button */}
+      {selectedElement && (
+        <div className="absolute bottom-4 right-4">
+          <button
+            onClick={() => setSelectedElement(null)}
+            className="px-3 py-1.5 bg-blue-500 text-white rounded-md text-xs hover:bg-blue-600 transition-colors flex items-center gap-1.5 shadow-md"
+          >
+            <Settings className="w-3 h-3" />
+            <span>Editar fundo</span>
+          </button>
+        </div>
+      )}
+
+      {/* Debug info */}
+      <div className="absolute bottom-2 left-2 text-xs text-gray-400">
+        {selectedElement
+          ? "Modo: Edição de elemento"
+          : "Modo: Configurações de fundo"}
       </div>
     </div>
   );
