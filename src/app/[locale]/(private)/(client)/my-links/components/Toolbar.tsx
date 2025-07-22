@@ -29,6 +29,10 @@ export function Toolbar() {
     setCanvasPosition,
     centerCanvas,
     isCanvasDragging,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useBioBuilderStore();
   const [previewMode, setPreviewMode] = useState<"mobile" | "desktop">(
     "mobile"
@@ -90,10 +94,22 @@ export function Toolbar() {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" disabled>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={!canUndo()}
+              onClick={undo}
+              title="Desfazer última ação"
+            >
               <Undo className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="sm" disabled>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={!canRedo()}
+              onClick={redo}
+              title="Refazer última ação"
+            >
               <Redo className="w-4 h-4" />
             </Button>
           </div>

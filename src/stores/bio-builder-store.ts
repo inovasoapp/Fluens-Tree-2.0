@@ -39,6 +39,23 @@ interface BioBuilderState {
   lastSaved: Date | null;
   autoSaveEnabled: boolean;
 
+  // History state for undo/redo functionality
+  history: {
+    past: BioPage[];
+    future: BioPage[];
+    limit: number; // Maximum number of states to store in history
+    lastActionType?: string; // Track the type of the last action
+    lastActionTimestamp?: number; // Track when the last action occurred
+    batchingDelay: number; // Time window for batching similar actions (in ms)
+  };
+
+  // History management functions
+  addToHistory: (page: BioPage, actionType?: string) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+
   // Actions
   setCurrentPage: (page: BioPage) => void;
   setSelectedElement: (element: BioElement | null) => void;
@@ -260,8 +277,325 @@ export const useBioBuilderStore = create<BioBuilderState>()(
       isCanvasDragging: false,
       lastSaved: null,
       autoSaveEnabled: true,
+      // Initialize history with empty arrays and a limit of 50 states
+      history: {
+        past: [],
+        future: [],
+        limit: 50, // Maximum number of states to store in history
+        batchingDelay: 500, // Group changes that occur within 500ms
+      },
+
+      // History management functions
+      addToHistory: (page, actionType) => {
+        const state = get();
+        const now = Date.now();
+
+        // Validate input page before processing
+        if (!page || typeof page !== "object") {
+          console.error("Invalid page object provided to addToHistory:", page);
+          return; // Don't proceed with invalid data
+        }
+
+        // Define a fallback function for history processing
+        const fallbackHistoryProcessing = () => {
+          try {
+            // Create a deep copy of the page to avoid reference issues
+            const pageCopy = JSON.parse(
+              JSON.stringify(page, (key, value) => {
+                if (value instanceof Date) {
+                  return { __type: "Date", value: value.toISOString() };
+                }
+                return value;
+              })
+            );
+
+            // Parse dates back to Date objects
+            const pageWithDates = JSON.parse(
+              JSON.stringify(pageCopy),
+              (key, value) => {
+                if (
+                  value &&
+                  typeof value === "object" &&
+                  value.__type === "Date"
+                ) {
+                  return new Date(value.value);
+                }
+                return value;
+              }
+            );
+
+            // Implement intelligent grouping of changes
+            const shouldGroup =
+              actionType &&
+              state.history.lastActionType === actionType &&
+              state.history.lastActionTimestamp &&
+              now - state.history.lastActionTimestamp <
+                state.history.batchingDelay;
+
+            let updatedPast;
+
+            if (shouldGroup && state.history.past.length > 0) {
+              updatedPast = [...state.history.past.slice(0, -1), pageWithDates];
+            } else {
+              updatedPast = [...state.history.past, pageWithDates];
+            }
+
+            const limitedPast =
+              updatedPast.length > state.history.limit
+                ? updatedPast.slice(updatedPast.length - state.history.limit)
+                : updatedPast;
+
+            set({
+              history: {
+                ...state.history,
+                past: limitedPast,
+                future: [],
+                lastActionType: actionType,
+                lastActionTimestamp: now,
+              },
+            });
+          } catch (error) {
+            console.error("Error in fallback history processing:", error);
+            // Last resort recovery: just add the page as-is without processing
+            try {
+              const safeHistory = [...state.history.past];
+              if (safeHistory.length >= state.history.limit) {
+                safeHistory.shift(); // Remove oldest entry if at limit
+              }
+              safeHistory.push(page);
+
+              set({
+                history: {
+                  ...state.history,
+                  past: safeHistory,
+                  future: [],
+                  lastActionType: actionType,
+                  lastActionTimestamp: now,
+                },
+              });
+            } catch (criticalError) {
+              console.error(
+                "Critical error in history management:",
+                criticalError
+              );
+              // At this point, we can't safely update the history
+              // Just log the error and continue without updating history
+            }
+          }
+        };
+
+        // Import optimized history functions
+        import("./optimized-history")
+          .then(
+            ({
+              createOptimizedHistoryEntry,
+              serializeHistoryEntry,
+              deserializeHistoryEntry,
+            }) => {
+              try {
+                // Create an optimized version of the page for storage
+                const optimizedPage = createOptimizedHistoryEntry(page);
+
+                // Serialize the optimized page for storage
+                const serializedPage = serializeHistoryEntry(optimizedPage);
+
+                // Deserialize the page to ensure proper handling of Date objects
+                const processedPage = deserializeHistoryEntry(serializedPage);
+
+                // Validate the processed page
+                if (!processedPage || typeof processedPage !== "object") {
+                  throw new Error("Invalid processed page");
+                }
+
+                // Implement intelligent grouping of changes
+                const shouldGroup =
+                  // Check if we have a previous action of the same type
+                  actionType &&
+                  state.history.lastActionType === actionType &&
+                  state.history.lastActionTimestamp &&
+                  // Check if the previous action was recent enough to group
+                  now - state.history.lastActionTimestamp <
+                    state.history.batchingDelay;
+
+                let updatedPast;
+
+                if (shouldGroup && state.history.past.length > 0) {
+                  // Replace the last history entry instead of adding a new one
+                  updatedPast = [
+                    ...state.history.past.slice(0, -1),
+                    processedPage,
+                  ];
+                } else {
+                  // Add as a new history entry
+                  updatedPast = [...state.history.past, processedPage];
+                }
+
+                // Limit the size of the history to avoid memory issues
+                const limitedPast =
+                  updatedPast.length > state.history.limit
+                    ? updatedPast.slice(
+                        updatedPast.length - state.history.limit
+                      )
+                    : updatedPast;
+
+                set({
+                  history: {
+                    ...state.history,
+                    past: limitedPast,
+                    future: [], // Clear future history when a new action is performed
+                    lastActionType: actionType,
+                    lastActionTimestamp: now,
+                  },
+                });
+              } catch (error) {
+                console.error("Error in optimized history processing:", error);
+                fallbackHistoryProcessing();
+              }
+            }
+          )
+          .catch((error) => {
+            console.error(
+              "Failed to import optimized history functions:",
+              error
+            );
+            fallbackHistoryProcessing();
+          });
+      },
+
+      undo: () => {
+        const state = get();
+
+        // Check if there are states to undo
+        if (state.history.past.length === 0 || !state.currentPage) {
+          return; // Nothing to undo
+        }
+
+        try {
+          // Get the last state from the past
+          const newPast = [...state.history.past];
+          const previousState = newPast.pop();
+
+          // Validate the previous state before applying it
+          if (!previousState || typeof previousState !== "object") {
+            console.error(
+              "Error in undo: Invalid previous state",
+              previousState
+            );
+            throw new Error("Invalid previous state");
+          }
+
+          // Add current state to future history
+          const newFuture = [state.currentPage, ...state.history.future];
+
+          // Update the store
+          set({
+            currentPage: previousState,
+            history: {
+              ...state.history,
+              past: newPast,
+              future: newFuture,
+            },
+          });
+        } catch (error) {
+          console.error("Error during undo operation:", error);
+
+          // Recovery strategy: Remove the problematic state from history
+          if (state.history.past.length > 0) {
+            const newPast = [...state.history.past];
+            newPast.pop(); // Remove the problematic state
+
+            set({
+              history: {
+                ...state.history,
+                past: newPast,
+              },
+            });
+
+            // If there are more states in history, try to undo again with the next state
+            if (newPast.length > 0) {
+              console.log(
+                "Attempting recovery by trying the next state in history"
+              );
+              setTimeout(() => state.undo(), 0);
+            }
+          }
+        }
+      },
+
+      redo: () => {
+        const state = get();
+
+        // Check if there are states to redo
+        if (state.history.future.length === 0 || !state.currentPage) {
+          return; // Nothing to redo
+        }
+
+        try {
+          // Get the next state from the future
+          const [nextState, ...newFuture] = state.history.future;
+
+          // Validate the next state before applying it
+          if (!nextState || typeof nextState !== "object") {
+            console.error("Error in redo: Invalid next state", nextState);
+            throw new Error("Invalid next state");
+          }
+
+          // Add current state to past history
+          const newPast = [...state.history.past, state.currentPage];
+
+          // Update the store
+          set({
+            currentPage: nextState,
+            history: {
+              ...state.history,
+              past: newPast,
+              future: newFuture,
+            },
+          });
+        } catch (error) {
+          console.error("Error during redo operation:", error);
+
+          // Recovery strategy: Remove the problematic state from future history
+          if (state.history.future.length > 0) {
+            const [_, ...newFuture] = state.history.future;
+
+            set({
+              history: {
+                ...state.history,
+                future: newFuture,
+              },
+            });
+
+            // If there are more states in future history, try to redo again with the next state
+            if (newFuture.length > 0) {
+              console.log(
+                "Attempting recovery by trying the next state in future history"
+              );
+              setTimeout(() => state.redo(), 0);
+            }
+          }
+        }
+      },
+
+      canUndo: () => {
+        const state = get();
+        // We can undo if there are states in the past history
+        return state.history.past.length > 0;
+      },
+
+      canRedo: () => {
+        const state = get();
+        // We can redo if there are states in the future history
+        return state.history.future.length > 0;
+      },
 
       setCurrentPage: (page) => {
+        const state = get();
+        // Only add to history if there's a current page to save
+        if (state.currentPage) {
+          state.addToHistory(state.currentPage);
+        }
+
         const migratedPage = migratePageBackgroundConfig(page);
         set({
           currentPage: migratedPage,
@@ -303,6 +637,9 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         const state = get();
         if (!state.currentPage) return;
 
+        // Add current state to history before adding a new element
+        state.addToHistory(state.currentPage, `addElement:${elementData.type}`);
+
         const newElement: BioElement = {
           ...elementData,
           id: `element-${Date.now()}-${Math.random()
@@ -324,6 +661,12 @@ export const useBioBuilderStore = create<BioBuilderState>()(
       addElementFromTemplate: (template, position) => {
         const state = get();
         if (!state.currentPage) return;
+
+        // Add current state to history before adding an element from template
+        state.addToHistory(
+          state.currentPage,
+          `addElementFromTemplate:${template.id}`
+        );
 
         const newElement: BioElement = {
           id: `element-${Date.now()}-${Math.random()
@@ -365,6 +708,9 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         const state = get();
         if (!state.currentPage) return;
 
+        // Add current state to history before updating, with action type
+        state.addToHistory(state.currentPage, `updateElement:${id}`);
+
         const updatedElements = state.currentPage.elements.map((element) =>
           element.id === id
             ? { ...element, data: { ...element.data, ...data } }
@@ -384,6 +730,9 @@ export const useBioBuilderStore = create<BioBuilderState>()(
       deleteElement: (id) => {
         const state = get();
         if (!state.currentPage) return;
+
+        // Add current state to history before deleting an element
+        state.addToHistory(state.currentPage, `deleteElement:${id}`);
 
         const updatedElements = state.currentPage.elements
           .filter((element) => element.id !== id)
@@ -407,6 +756,12 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         const state = get();
         if (!state.currentPage) return;
 
+        // Add current state to history before reordering elements
+        state.addToHistory(
+          state.currentPage,
+          `reorderElements:${fromIndex}:${toIndex}`
+        );
+
         const elements = [...state.currentPage.elements];
         const [movedElement] = elements.splice(fromIndex, 1);
         elements.splice(toIndex, 0, movedElement);
@@ -429,6 +784,12 @@ export const useBioBuilderStore = create<BioBuilderState>()(
       moveElement: (elementId, newPosition) => {
         const state = get();
         if (!state.currentPage) return;
+
+        // Add current state to history before moving an element
+        state.addToHistory(
+          state.currentPage,
+          `moveElement:${elementId}:${newPosition}`
+        );
 
         const elements = [...state.currentPage.elements];
         const elementIndex = elements.findIndex((el) => el.id === elementId);
@@ -461,6 +822,9 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         const state = get();
         if (!state.currentPage) return;
 
+        // Add current state to history before updating the theme
+        state.addToHistory(state.currentPage, `updatePageTheme`);
+
         const updatedPage = {
           ...state.currentPage,
           theme: { ...state.currentPage.theme, ...theme },
@@ -474,6 +838,12 @@ export const useBioBuilderStore = create<BioBuilderState>()(
       updateBackgroundType: (backgroundType) => {
         const state = get();
         if (!state.currentPage) return;
+
+        // Add current state to history before updating the background type
+        state.addToHistory(
+          state.currentPage,
+          `updateBackgroundType:${backgroundType}`
+        );
 
         // Log the background type change for debugging
         console.log(
@@ -524,6 +894,9 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         const state = get();
         if (!state.currentPage) return;
 
+        // Add current state to history before updating the background gradient
+        state.addToHistory(state.currentPage, `updateBackgroundGradient`);
+
         // Monitor background changes for persistence events
         import("@/lib/background-persistence")
           .then(({ monitorBackgroundChanges }) => {
@@ -554,6 +927,9 @@ export const useBioBuilderStore = create<BioBuilderState>()(
       updateBackgroundImage: (image) => {
         const state = get();
         if (!state.currentPage) return;
+
+        // Add current state to history before updating the background image
+        state.addToHistory(state.currentPage, `updateBackgroundImage`);
 
         // Log the image update for debugging
         console.log(
