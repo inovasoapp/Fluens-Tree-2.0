@@ -136,7 +136,7 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
 
             {/* Elements List */}
             <ScrollArea className="flex-1 custom-scrollbar h-[calc(100vh-180px)]">
-              <div className="p-4 space-y-6">
+              <div className="pr-6 pt-4 pb-16 space-y-6">
                 {filteredCategories.map((category) => (
                   <div key={category.name}>
                     <h3 className="text-sm font-medium text-zinc-300 mb-3 uppercase tracking-wide">
