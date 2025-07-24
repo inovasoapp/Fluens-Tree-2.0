@@ -38,7 +38,7 @@ export function CanvasControls() {
   return (
     <div className="absolute bottom-6 right-6 flex flex-col space-y-2 z-10">
       {/* Zoom Controls */}
-      <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-2 flex flex-col space-y-1">
+      <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-2 flex flex-col items-center space-y-1">
         <Button
           variant="ghost"
           size="sm"
@@ -67,7 +67,7 @@ export function CanvasControls() {
       </div>
 
       {/* Position Controls */}
-      <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-2 flex flex-col space-y-1">
+      <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-2 flex flex-col items-center space-y-1">
         <Button
           variant="ghost"
           size="sm"
