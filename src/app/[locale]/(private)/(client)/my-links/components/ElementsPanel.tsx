@@ -24,13 +24,8 @@ interface ElementsPanelProps {
 }
 
 export function ElementsPanel({ onHide }: ElementsPanelProps) {
-  const { addElementFromTemplate } = useBioBuilderStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"blocks" | "library">("blocks");
-
-  const handleAddElement = (template: (typeof elementTemplates)[0]) => {
-    addElementFromTemplate(template);
-  };
 
   // Organize elements by category
   const categories = [
@@ -147,7 +142,6 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
                         <DraggableTemplate
                           key={template.id}
                           template={template}
-                          onAdd={handleAddElement}
                         />
                       ))}
                     </div>
@@ -155,7 +149,7 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
                 ))}
 
                 {filteredCategories.length === 0 && searchTerm && (
-                  <div className="text-center py-8">
+                  <div className="text-center py-8 ">
                     <div className="text-zinc-400 mb-2">
                       Nenhum elemento encontrado
                     </div>

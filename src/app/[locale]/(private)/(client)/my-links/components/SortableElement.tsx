@@ -28,8 +28,9 @@ export function SortableElement({
     id: element.id,
   });
 
+  // Não aplicar transform ao elemento original durante o drag
+  // O DragOverlay será responsável por mostrar a representação visual do elemento sendo arrastado
   const style = {
-    transform: CSS.Transform.toString(transform),
     transition,
   };
 
@@ -38,8 +39,6 @@ export function SortableElement({
       ref={setNodeRef}
       style={style}
       className={`group relative transition-all duration-200 ${
-        isDragging ? "opacity-50 scale-95 z-50" : "opacity-100 scale-100"
-      } ${
         isSelected
           ? "ring-2 ring-blue-500 ring-offset-2"
           : "hover:ring-1 hover:ring-zinc-300"

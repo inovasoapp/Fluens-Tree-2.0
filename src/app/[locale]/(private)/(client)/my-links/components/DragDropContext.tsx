@@ -31,9 +31,11 @@ export function DragDropContext({ children }: DragDropContextProps) {
     currentPage,
     draggedElement,
     draggedTemplate,
+
     setDraggedElement,
     setDraggedTemplate,
     setIsDragging,
+
     reorderElements,
     addElementFromTemplate,
   } = useBioBuilderStore();
@@ -41,7 +43,7 @@ export function DragDropContext({ children }: DragDropContextProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 10,
       },
     })
   );
@@ -67,14 +69,19 @@ export function DragDropContext({ children }: DragDropContextProps) {
   };
 
   const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
+    const { over } = event;
 
     // Verificar se estamos sobre uma área dropável válida
-    if (over && over.id === "canvas-drop-zone") {
-      // Estamos sobre o canvas, podemos mostrar feedback visual se necessário
+    const isValidDropArea =
+      over &&
+      (over.id === "canvas-drop-zone" ||
+        over.id.toString().startsWith("element-"));
+
+    // Atualizar o estado no store para controlar a renderização do overlay
+
+    if (isValidDropArea) {
       console.log("Dragging over valid drop zone:", over.id);
     } else {
-      // Não estamos sobre uma área dropável válida
       console.log("Dragging over invalid area or no area");
     }
   };

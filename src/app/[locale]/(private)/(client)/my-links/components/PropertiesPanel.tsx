@@ -19,8 +19,13 @@ import { Trash2, Settings } from "lucide-react";
 import { BackgroundEditor } from "./BackgroundEditor";
 
 export function PropertiesPanel() {
-  const { selectedElement, updateElement, deleteElement, setSelectedElement } =
-    useBioBuilderStore();
+  const {
+    selectedElement,
+    updateElement,
+    deleteElement,
+    setSelectedElement,
+    isDragging,
+  } = useBioBuilderStore();
 
   const handleUpdate = (field: string, value: any) => {
     if (!selectedElement) return;

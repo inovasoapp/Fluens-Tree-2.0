@@ -7,20 +7,17 @@ import { ElementTemplate } from "@/types/bio-builder";
 
 interface DraggableTemplateProps {
   template: ElementTemplate;
-  onAdd: (template: ElementTemplate) => void;
 }
 
-export function DraggableTemplate({ template, onAdd }: DraggableTemplateProps) {
+export function DraggableTemplate({ template }: DraggableTemplateProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: `template-${template.id}`,
     });
 
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
+  // Não aplicar transform ao elemento original durante o drag
+  // O DragOverlay será responsável por mostrar a representação visual do elemento sendo arrastado
+  const style = undefined;
 
   // Get template preview based on type
   const getTemplatePreview = () => {
@@ -88,17 +85,10 @@ export function DraggableTemplate({ template, onAdd }: DraggableTemplateProps) {
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`transition-all duration-200 ${
-        isDragging ? "opacity-50 scale-95" : "opacity-100 scale-100"
-      }`}
-    >
+    <div ref={setNodeRef} style={style} className="transition-all duration-200">
       <Button
         variant="ghost"
         className="w-full h-auto p-0 bg-[#2a2a2a] hover:bg-[#333333] border border-zinc-700 hover:border-zinc-600 cursor-grab active:cursor-grabbing rounded-lg"
-        onClick={() => onAdd(template)}
         {...attributes}
         {...listeners}
       >
