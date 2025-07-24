@@ -11,6 +11,11 @@ export function DropZone({ children }: DropZoneProps) {
   const { isDragging, draggedTemplate } = useBioBuilderStore();
   const { isOver, setNodeRef } = useDroppable({
     id: "canvas-drop-zone",
+    // Adicionar dados para identificar esta zona como a única válida
+    data: {
+      accepts: ["template", "element"],
+      isCanvasDropZone: true,
+    },
   });
 
   return (
@@ -28,18 +33,23 @@ export function DropZone({ children }: DropZoneProps) {
     >
       {children}
 
-      {/* Drop Indicator */}
-      {isDragging && draggedTemplate && (
+      {/* Drop Indicator - mostrar apenas quando estiver sobre a área válida */}
+      {isDragging && draggedTemplate && isOver && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="bg-white dark:bg-zinc-800 px-4 py-2 rounded-lg shadow-lg border border-blue-300 dark:border-blue-600">
+          <div className="bg-white dark:bg-zinc-800 px-4 py-2 rounded-lg shadow-lg border border-blue-300 dark:border-blue-600 animate-pulse">
             <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
               <span className="text-lg">{draggedTemplate.icon}</span>
               <span className="text-sm font-medium">
-                Drop to add {draggedTemplate.name}
+                Solte para adicionar {draggedTemplate.name}
               </span>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Indicador de área dropável quando arrastando */}
+      {isDragging && draggedTemplate && !isOver && (
+        <div className="absolute inset-0 border-2 border-dashed border-blue-300/50 dark:border-blue-600/50 rounded-lg pointer-events-none" />
       )}
     </div>
   );

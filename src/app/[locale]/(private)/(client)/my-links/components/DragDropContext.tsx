@@ -9,7 +9,8 @@ import {
   useSensor,
   useSensors,
   DragOverlay,
-  closestCorners,
+  // Usar rectIntersection em vez de closestCorners para detecção mais precisa
+  rectIntersection,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -19,6 +20,7 @@ import {
 import { useBioBuilderStore } from "@/stores/bio-builder-store";
 import { ElementRenderer } from "./ElementRenderer";
 import { elementTemplates } from "@/data/element-templates";
+import { toast } from "./Toast";
 
 interface DragDropContextProps {
   children: React.ReactNode;
@@ -65,17 +67,59 @@ export function DragDropContext({ children }: DragDropContextProps) {
   };
 
   const handleDragOver = (event: DragOverEvent) => {
-    // Handle drag over logic if needed
+    const { active, over } = event;
+
+    // Verificar se estamos sobre uma área dropável válida
+    if (over && over.id === "canvas-drop-zone") {
+      // Estamos sobre o canvas, podemos mostrar feedback visual se necessário
+      console.log("Dragging over valid drop zone:", over.id);
+    } else {
+      // Não estamos sobre uma área dropável válida
+      console.log("Dragging over invalid area or no area");
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     setIsDragging(false);
+
+    // Verificar se o drop foi em uma área válida
+    const isValidDrop =
+      over &&
+      (over.id === "canvas-drop-zone" ||
+        over.id.toString().startsWith("element-"));
+
+    // Se não estamos sobre uma área dropável válida, cancelamos a operação
+    if (!isValidDrop) {
+      console.log("Drop em área inválida ou fora de área dropável");
+
+      // Mostrar feedback visual para o usuário
+      if (active.id.toString().startsWith("template-")) {
+        const templateId = active.id.toString().replace("template-", "");
+        const template = elementTemplates.find((t) => t.id === templateId);
+        if (template) {
+          toast.show(
+            `Solte o elemento "${template.name}" apenas no mockup do iPhone`,
+            "warning"
+          );
+        } else {
+          toast.show("Solte elementos apenas no mockup do iPhone", "warning");
+        }
+      } else {
+        toast.show("Solte elementos apenas no mockup do iPhone", "warning");
+      }
+
+      // Limpar o estado de drag e retornar sem fazer alterações
+      setDraggedElement(null);
+      setDraggedTemplate(null);
+      return;
+    }
+
+    // Se chegamos aqui, o drop foi em uma área válida
+    // Podemos prosseguir com a lógica normal
     setDraggedElement(null);
     setDraggedTemplate(null);
-
-    if (!over) return;
 
     // Handle template drop to canvas
     if (
@@ -158,7 +202,7 @@ export function DragDropContext({ children }: DragDropContextProps) {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={rectIntersection}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}

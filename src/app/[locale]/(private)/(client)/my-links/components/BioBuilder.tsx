@@ -7,6 +7,8 @@ import { PropertiesPanel } from "./PropertiesPanel";
 import { Toolbar } from "./Toolbar";
 import { DragDropContext } from "./DragDropContext";
 import { ShowPanelButton } from "./ShowPanelButton";
+import { DragFeedback } from "./DragFeedback";
+import { ToastContainer } from "./Toast";
 import { useBioBuilderStore } from "@/stores/bio-builder-store";
 import "../bio-builder.css";
 
@@ -59,10 +61,11 @@ export function BioBuilder() {
           <PropertiesPanel />
         </div>
 
-        {/* Drag Overlay Styles */}
-        {isDragging && (
-          <div className="fixed inset-0 pointer-events-none z-40 bg-black/5 dark:bg-white/5" />
-        )}
+        {/* Componente de feedback visual durante o drag */}
+        <DragFeedback />
+
+        {/* Sistema de notificações */}
+        <ToastContainer />
       </div>
     </DragDropContext>
   );
