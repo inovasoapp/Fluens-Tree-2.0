@@ -32,6 +32,14 @@ interface BioBuilderState {
   draggedElement: BioElement | null;
   draggedTemplate: ElementTemplate | null;
 
+  // Insertion indicator state
+  dragOverIndex: number | null;
+  insertionPosition: "top" | "bottom" | null;
+
+  // Temporary reorganization state for visual feedback during drag
+  temporaryElementOrder: string[] | null;
+  isTemporaryReorganization: boolean;
+
   // Canvas drag state
   isCanvasDragging: boolean;
 
@@ -80,6 +88,21 @@ interface BioBuilderState {
   setIsDragging: (isDragging: boolean) => void;
   setDraggedElement: (element: BioElement | null) => void;
   setDraggedTemplate: (template: ElementTemplate | null) => void;
+
+  // Insertion indicator management
+  setDragOverIndex: (index: number | null) => void;
+  setInsertionPosition: (position: "top" | "bottom" | null) => void;
+  clearDragOverState: () => void;
+
+  // Temporary reorganization management
+  setTemporaryOrder: (order: string[]) => void;
+  clearTemporaryState: () => void;
+  applyTemporaryReorganization: (
+    draggedId: string,
+    targetIndex: number
+  ) => void;
+  revertTemporaryReorganization: () => void;
+  getCurrentElementOrder: () => BioElement[];
 
   // Page management
   updatePageTheme: (theme: Partial<BioPageTheme>) => void;
@@ -274,6 +297,10 @@ export const useBioBuilderStore = create<BioBuilderState>()(
       isDragging: false,
       draggedElement: null,
       draggedTemplate: null,
+      dragOverIndex: null,
+      insertionPosition: null,
+      temporaryElementOrder: null,
+      isTemporaryReorganization: false,
       isCanvasDragging: false,
       lastSaved: null,
       autoSaveEnabled: true,
@@ -817,6 +844,79 @@ export const useBioBuilderStore = create<BioBuilderState>()(
       setIsDragging: (isDragging) => set({ isDragging }),
       setDraggedElement: (element) => set({ draggedElement: element }),
       setDraggedTemplate: (template) => set({ draggedTemplate: template }),
+
+      // Insertion indicator management
+      setDragOverIndex: (index) => set({ dragOverIndex: index }),
+      setInsertionPosition: (position) => set({ insertionPosition: position }),
+      clearDragOverState: () =>
+        set({ dragOverIndex: null, insertionPosition: null }),
+
+      // Temporary reorganization management
+      setTemporaryOrder: (order) =>
+        set({
+          temporaryElementOrder: order,
+          isTemporaryReorganization: true,
+        }),
+
+      clearTemporaryState: () =>
+        set({
+          temporaryElementOrder: null,
+          isTemporaryReorganization: false,
+          dragOverIndex: null,
+          insertionPosition: null,
+        }),
+
+      applyTemporaryReorganization: (draggedId, targetIndex) => {
+        const state = get();
+        if (!state.currentPage) return;
+
+        const elements = [...state.currentPage.elements];
+        const draggedIndex = elements.findIndex((el) => el.id === draggedId);
+
+        if (draggedIndex === -1) return;
+
+        // Create temporary order for visual feedback
+        const [draggedElement] = elements.splice(draggedIndex, 1);
+        elements.splice(targetIndex, 0, draggedElement);
+
+        const temporaryOrder = elements.map((el) => el.id);
+
+        set({
+          temporaryElementOrder: temporaryOrder,
+          isTemporaryReorganization: true,
+        });
+      },
+
+      revertTemporaryReorganization: () => {
+        const state = get();
+        if (!state.isTemporaryReorganization) return;
+
+        set({
+          temporaryElementOrder: null,
+          isTemporaryReorganization: false,
+        });
+      },
+
+      getCurrentElementOrder: () => {
+        const state = get();
+        if (!state.currentPage) return [];
+
+        // If we have a temporary order during drag, use that for visual display
+        if (state.isTemporaryReorganization && state.temporaryElementOrder) {
+          const elementMap = new Map(
+            state.currentPage.elements.map((el) => [el.id, el])
+          );
+
+          return state.temporaryElementOrder
+            .map((id) => elementMap.get(id))
+            .filter((el): el is BioElement => el !== undefined);
+        }
+
+        // Otherwise, return elements in their normal order
+        return [...state.currentPage.elements].sort(
+          (a, b) => a.position - b.position
+        );
+      },
 
       updatePageTheme: (theme) => {
         const state = get();

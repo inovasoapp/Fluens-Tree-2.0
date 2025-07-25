@@ -44,7 +44,7 @@ export function createOptimizedHistoryEntry(page: BioPage): BioPage {
             primaryColor: "#000000",
             secondaryColor: "#666666",
             fontFamily: "Inter",
-            backgroundType: "solid",
+            backgroundType: "solid" as const,
           },
       createdAt: page.createdAt instanceof Date ? page.createdAt : new Date(),
       updatedAt: page.updatedAt instanceof Date ? page.updatedAt : new Date(),
@@ -54,7 +54,9 @@ export function createOptimizedHistoryEntry(page: BioPage): BioPage {
   } catch (error) {
     console.error("Error creating optimized history entry:", error);
     throw new Error(
-      `Failed to create optimized history entry: ${error.message}`
+      `Failed to create optimized history entry: ${
+        error instanceof Error ? error.message : String(error)
+      }`
     );
   }
 }
@@ -81,25 +83,27 @@ export function serializeHistoryEntry(page: BioPage): any {
       try {
         if (key === "createdAt" || key === "updatedAt") {
           // Handle Date objects
-          if (page[key] instanceof Date) {
-            serialized[key] = {
+          if (page[key as keyof BioPage] instanceof Date) {
+            (serialized as any)[key] = {
               __type: "Date",
-              value: page[key].toISOString(),
+              value: (page[key as keyof BioPage] as Date).toISOString(),
             };
           } else {
             // If not a Date, create a default date
-            serialized[key] = {
+            (serialized as any)[key] = {
               __type: "Date",
               value: new Date().toISOString(),
             };
           }
         } else if (key === "elements") {
           // Deep copy elements array
-          serialized[key] = Array.isArray(page[key]) ? [...page[key]] : [];
+          (serialized as any)[key] = Array.isArray(page[key as keyof BioPage])
+            ? [...(page[key as keyof BioPage] as any[])]
+            : [];
         } else if (key === "theme") {
           // Deep copy theme object
-          serialized[key] = page[key]
-            ? { ...page[key] }
+          (serialized as any)[key] = page[key as keyof BioPage]
+            ? { ...(page[key as keyof BioPage] as any) }
             : {
                 backgroundColor: "#ffffff",
                 primaryColor: "#000000",
@@ -109,28 +113,28 @@ export function serializeHistoryEntry(page: BioPage): any {
               };
         } else {
           // Copy other properties
-          serialized[key] = page[key];
+          (serialized as any)[key] = page[key as keyof BioPage];
         }
       } catch (propertyError) {
         console.error(`Error serializing property ${key}:`, propertyError);
         // Set a default value for the property to maintain structure
         if (key === "elements") {
-          serialized[key] = [];
+          (serialized as any)[key] = [];
         } else if (key === "theme") {
-          serialized[key] = {
+          (serialized as any)[key] = {
             backgroundColor: "#ffffff",
             primaryColor: "#000000",
             secondaryColor: "#666666",
             fontFamily: "Inter",
-            backgroundType: "solid",
+            backgroundType: "solid" as const,
           };
         } else if (key === "createdAt" || key === "updatedAt") {
-          serialized[key] = {
+          (serialized as any)[key] = {
             __type: "Date",
             value: new Date().toISOString(),
           };
         } else {
-          serialized[key] = null;
+          (serialized as any)[key] = null;
         }
       }
     });
@@ -138,7 +142,11 @@ export function serializeHistoryEntry(page: BioPage): any {
     return serialized;
   } catch (error) {
     console.error("Error serializing history entry:", error);
-    throw new Error(`Failed to serialize history entry: ${error.message}`);
+    throw new Error(
+      `Failed to serialize history entry: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 }
 
@@ -240,6 +248,10 @@ export function deserializeHistoryEntry(serializedPage: any): BioPage {
     return deserialized as BioPage;
   } catch (error) {
     console.error("Error deserializing history entry:", error);
-    throw new Error(`Failed to deserialize history entry: ${error.message}`);
+    throw new Error(
+      `Failed to deserialize history entry: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 }

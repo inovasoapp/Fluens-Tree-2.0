@@ -173,12 +173,9 @@ export const getBackgroundStyle = (
             "Image configuration missing, using fallback color but MAINTAINING image type"
           );
           // Return a simple background color without changing the type
-          // Add a custom property to indicate this is an image background without an image
           return {
             backgroundColor: fallbackColor,
-            // This custom property won't affect rendering but helps identify the background type
-            "--background-type": "image-pending" as any,
-          };
+          } as React.CSSProperties;
         }
 
         const { url, blur, position, size } = theme.backgroundImage;
@@ -189,12 +186,9 @@ export const getBackgroundStyle = (
             "Invalid image URL, using fallback color but MAINTAINING image type"
           );
           // Return a simple background color without changing the type
-          // Add a custom property to indicate this is an image background without an image
           return {
             backgroundColor: fallbackColor,
-            // This custom property won't affect rendering but helps identify the background type
-            "--background-type": "image-pending" as any,
-          };
+          } as React.CSSProperties;
         }
 
         // Validate blur value

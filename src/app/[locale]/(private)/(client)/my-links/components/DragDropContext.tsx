@@ -21,6 +21,7 @@ import { useBioBuilderStore } from "@/stores/bio-builder-store";
 import { ElementRenderer } from "./ElementRenderer";
 import { elementTemplates } from "@/data/element-templates";
 import { toast } from "./Toast";
+import { useEffect } from "react";
 
 interface DragDropContextProps {
   children: React.ReactNode;
@@ -40,6 +41,14 @@ export function DragDropContext({ children }: DragDropContextProps) {
     addElementFromTemplate,
   } = useBioBuilderStore();
 
+  // Cleanup temporary state on unmount
+  useEffect(() => {
+    return () => {
+      const store = useBioBuilderStore.getState();
+      store.clearTemporaryState();
+    };
+  }, []);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -50,7 +59,12 @@ export function DragDropContext({ children }: DragDropContextProps) {
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
+    const store = useBioBuilderStore.getState();
+
     setIsDragging(true);
+
+    // Clear any existing temporary state from previous drags
+    store.clearTemporaryState();
 
     // Check if dragging from template panel
     if (active.id.toString().startsWith("template-")) {
@@ -69,7 +83,15 @@ export function DragDropContext({ children }: DragDropContextProps) {
   };
 
   const handleDragOver = (event: DragOverEvent) => {
-    const { over } = event;
+    const { over, active } = event;
+    const store = useBioBuilderStore.getState();
+
+    // Clear drag over state if not over any valid area
+    if (!over) {
+      store.clearDragOverState();
+      store.revertTemporaryReorganization();
+      return;
+    }
 
     // Verificar se estamos sobre uma área dropável válida
     const isValidDropArea =
@@ -77,19 +99,67 @@ export function DragDropContext({ children }: DragDropContextProps) {
       (over.id === "canvas-drop-zone" ||
         over.id.toString().startsWith("element-"));
 
-    // Atualizar o estado no store para controlar a renderização do overlay
+    if (!isValidDropArea) {
+      store.clearDragOverState();
+      store.revertTemporaryReorganization();
+      return;
+    }
 
-    if (isValidDropArea) {
-      console.log("Dragging over valid drop zone:", over.id);
-    } else {
-      console.log("Dragging over invalid area or no area");
+    // Handle drag over elements for insertion indicators and visual reorganization
+    if (over.id.toString().startsWith("element-") && active) {
+      const overElementId = over.id.toString();
+      const overElement = currentPage?.elements.find(
+        (el) => el.id === overElementId
+      );
+
+      if (overElement && active.id !== overElementId) {
+        // Check if we're dragging an existing element (for reordering)
+        const draggedElement = currentPage?.elements.find(
+          (el) => el.id === active.id
+        );
+
+        if (draggedElement) {
+          // Calculate insertion position based on drag direction and mouse position
+          const draggedIndex = draggedElement.position;
+          const overIndex = overElement.position;
+
+          // Apply temporary visual reorganization
+          store.applyTemporaryReorganization(draggedElement.id, overIndex);
+
+          console.log(
+            "Visual reorganization applied:",
+            "dragged:",
+            draggedIndex,
+            "target:",
+            overIndex
+          );
+        } else {
+          // The SortableElement will handle the detailed position calculation for templates
+          console.log(
+            "Dragging template over element:",
+            overElementId,
+            "at position:",
+            overElement.position
+          );
+        }
+      }
+    } else if (over.id === "canvas-drop-zone") {
+      // Clear insertion indicators and temporary reorganization when over the general canvas area
+      store.clearDragOverState();
+      store.revertTemporaryReorganization();
+      console.log("Dragging over canvas drop zone");
     }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    const store = useBioBuilderStore.getState();
 
     setIsDragging(false);
+
+    // Clear drag over state and temporary reorganization
+    store.clearDragOverState();
+    store.clearTemporaryState();
 
     // Verificar se o drop foi em uma área válida
     const isValidDrop =
@@ -215,7 +285,10 @@ export function DragDropContext({ children }: DragDropContextProps) {
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={currentPage?.elements.map((el) => el.id) || []}
+        items={useBioBuilderStore
+          .getState()
+          .getCurrentElementOrder()
+          .map((el) => el.id)}
         strategy={verticalListSortingStrategy}
       >
         {children}

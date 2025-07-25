@@ -10,11 +10,7 @@ const customRender = (
 
 // Provider wrapper
 function AllProviders({ children }: { children: React.ReactNode }) {
-  return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      {children}
-    </ThemeProvider>
-  );
+  return <ThemeProvider>{children}</ThemeProvider>;
 }
 
 // Re-export everything from testing-library

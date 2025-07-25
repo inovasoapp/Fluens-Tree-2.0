@@ -15,8 +15,13 @@ import {
 import { BackgroundErrorBoundary } from "./BackgroundErrorBoundary";
 
 export function Canvas() {
-  const { currentPage, selectedElement, setSelectedElement, centerCanvas } =
-    useBioBuilderStore();
+  const {
+    currentPage,
+    selectedElement,
+    setSelectedElement,
+    centerCanvas,
+    getCurrentElementOrder,
+  } = useBioBuilderStore();
 
   const [backgroundError, setBackgroundError] = useState(false);
   const [backgroundStyle, setBackgroundStyle] = useState<React.CSSProperties>(
@@ -201,16 +206,14 @@ export function Canvas() {
                           }
                         }}
                       >
-                        {currentPage.elements
-                          .sort((a, b) => a.position - b.position)
-                          .map((element) => (
-                            <SortableElement
-                              key={element.id}
-                              element={element}
-                              isSelected={selectedElement?.id === element.id}
-                              onSelect={setSelectedElement}
-                            />
-                          ))}
+                        {getCurrentElementOrder().map((element) => (
+                          <SortableElement
+                            key={element.id}
+                            element={element}
+                            isSelected={selectedElement?.id === element.id}
+                            onSelect={setSelectedElement}
+                          />
+                        ))}
 
                         {/* Empty State */}
                         {currentPage.elements.length === 0 && (
