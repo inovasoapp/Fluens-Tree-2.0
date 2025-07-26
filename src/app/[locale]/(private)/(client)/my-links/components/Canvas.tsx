@@ -123,7 +123,10 @@ export function Canvas() {
   if (!currentPage) return null;
 
   return (
-    <div className="relative w-full h-full bg-background">
+    <div
+      className="relative w-full h-full bg-background"
+      onClick={() => setSelectedElement(null)}
+    >
       {/* Deselect Button */}
       {selectedElement && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">

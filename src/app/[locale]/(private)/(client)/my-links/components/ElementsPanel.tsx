@@ -27,6 +27,8 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"blocks" | "library">("blocks");
 
+  const { setSelectedElement } = useBioBuilderStore();
+
   // Organize elements by category
   const categories = [
     {
@@ -63,7 +65,10 @@ export function ElementsPanel({ onHide }: ElementsPanelProps) {
     .filter((category) => category.elements.length > 0);
 
   return (
-    <div className="h-full flex flex-col bg-zinc-900 text-white">
+    <div
+      className="h-full flex flex-col bg-zinc-900 text-white"
+      onClick={() => setSelectedElement(null)}
+    >
       {/* Header */}
       <div className="p-4">
         <div className="flex items-center justify-between mb-8">

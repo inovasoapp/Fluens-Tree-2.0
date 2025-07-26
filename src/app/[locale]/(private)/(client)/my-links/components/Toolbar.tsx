@@ -27,6 +27,7 @@ export function Toolbar() {
     updatePageTheme,
     canvasPosition,
     setCanvasPosition,
+    setSelectedElement,
     centerCanvas,
     isCanvasDragging,
     undo,
@@ -73,7 +74,10 @@ export function Toolbar() {
   const zoomPercentage = Math.round(canvasPosition.scale * 100);
 
   return (
-    <div className="bg-white dark:bg-card border-b border-zinc-200 dark:border-zinc-700 px-4 py-3">
+    <div
+      className="bg-white dark:bg-card border-b border-zinc-200 dark:border-zinc-700 px-4 py-3"
+      onClick={() => setSelectedElement(null)}
+    >
       <div className="flex items-center justify-between">
         {/* Left Section */}
         <div className="flex items-center space-x-4">
