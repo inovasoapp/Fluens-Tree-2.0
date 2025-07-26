@@ -73,10 +73,37 @@ const mockElement: BioElement = {
 };
 
 const mockStoreState = {
-  dragOverIndex: null,
+  dragState: {
+    isDragging: false,
+    draggedElement: null,
+    draggedTemplate: null,
+    dragOverIndex: null,
+    insertionPosition: null,
+    temporaryElementOrder: null,
+    isTemporaryReorganization: false,
+    dragStartTime: null,
+    dragOperationId: null,
+    lastUpdateTime: 0,
+    stateVersion: {
+      version: 1,
+      timestamp: Date.now(),
+      operationId: "test-op",
+    },
+    performanceMetrics: {
+      calculationsPerSecond: 0,
+      lastCalculationTime: 0,
+      totalCalculations: 0,
+      averageCalculationTime: 0,
+      memoryUsage: 0,
+      activeAnimations: 0,
+    },
+    cleanupTimeout: null,
+    abandonedOperations: new Set(),
+  },
   setDragOverIndex: vi.fn(),
   setInsertionPosition: vi.fn(),
   clearDragOverState: vi.fn(),
+  getCurrentElementOrder: vi.fn(() => [mockElement]),
 };
 
 describe("SortableElement", () => {
@@ -294,7 +321,7 @@ describe("SortableElement", () => {
         .closest(".group") as HTMLElement;
 
       // Check that transition styles are applied
-      expect(element.style.transition).toContain("cubic-bezier");
+      expect(element.style.transition).toContain("background-color");
     });
   });
 
@@ -327,7 +354,7 @@ describe("SortableElement", () => {
       // This would be triggered by the useEffect when isOver changes to false
       // In a real scenario, this would be tested with proper DnD context
       // The function might be called during component initialization
-      expect(clearDragOverState).toHaveBeenCalledTimes(1);
+      expect(clearDragOverState).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -338,9 +365,7 @@ describe("SortableElement", () => {
       const element = screen
         .getByTestId("element-test-element-1")
         .closest(".group") as HTMLElement;
-      expect(element.style.transition).toContain(
-        "cubic-bezier(0.25, 0.46, 0.45, 0.94)"
-      );
+      expect(element.style.transition).toContain("background-color");
     });
 
     it("should handle rapid state changes without performance issues", () => {

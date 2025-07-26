@@ -415,3 +415,213 @@
     transform: translateY(0);
   }
 }
+
+/* Enhanced drag operation animations */
+@keyframes flow-gradient {
+  0% {
+    opacity: 0.3;
+    transform: translateX(-100%);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(0%);
+  }
+  100% {
+    opacity: 0.3;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes shift-indicator {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes zone-flow {
+  0% {
+    opacity: 0.2;
+    transform: translateX(-50%);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateX(0%);
+  }
+  100% {
+    opacity: 0.2;
+    transform: translateX(50%);
+  }
+}
+
+@keyframes ready-pulse {
+  0% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes progress-fill {
+  0% {
+    width: 20%;
+  }
+  50% {
+    width: 80%;
+  }
+  100% {
+    width: 60%;
+  }
+}
+
+@keyframes reorder-progress {
+  0% {
+    width: 30%;
+    opacity: 0.6;
+  }
+  50% {
+    width: 90%;
+    opacity: 1;
+  }
+  100% {
+    width: 50%;
+    opacity: 0.8;
+  }
+}
+
+/* Enhanced drag over animations */
+@keyframes drag-over-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(147, 51, 234, 0.5);
+  }
+}
+
+@keyframes reorganization-shimmer {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes drop-zone-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}
+
+@keyframes corner-ping {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  75%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Status indicator animations */
+@keyframes status-bounce {
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%,
+  43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes operation-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Utility classes for enhanced animations */
+.animate-flow-gradient {
+  animation: flow-gradient 2s ease-in-out infinite alternate;
+}
+
+.animate-shift-indicator {
+  animation: shift-indicator 1.5s ease-in-out infinite alternate;
+}
+
+.animate-zone-flow {
+  animation: zone-flow 3s ease-in-out infinite alternate;
+}
+
+.animate-ready-pulse {
+  animation: ready-pulse 2s ease-in-out infinite alternate;
+}
+
+.animate-progress-fill {
+  animation: progress-fill 1.5s ease-in-out infinite alternate;
+}
+
+.animate-reorder-progress {
+  animation: reorder-progress 1s ease-in-out infinite alternate;
+}
+
+.animate-drag-over-glow {
+  animation: drag-over-glow 2s ease-in-out infinite;
+}
+
+.animate-reorganization-shimmer {
+  animation: reorganization-shimmer 2s ease-in-out infinite;
+}
+
+.animate-drop-zone-pulse {
+  animation: drop-zone-pulse 2s ease-in-out infinite;
+}
+
+.animate-corner-ping {
+  animation: corner-ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-status-bounce {
+  animation: status-bounce 1s infinite;
+}
+
+.animate-operation-spin {
+  animation: operation-spin 1s linear infinite;
+}

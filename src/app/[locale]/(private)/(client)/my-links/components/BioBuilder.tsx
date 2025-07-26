@@ -8,6 +8,7 @@ import { Toolbar } from "./Toolbar";
 import { DragDropContext } from "./DragDropContext";
 import { ShowPanelButton } from "./ShowPanelButton";
 import { DragFeedback } from "./DragFeedback";
+import { DragOperationStatus } from "./DragOperationStatus";
 import { ToastContainer } from "./Toast";
 import { useBioBuilderStore } from "@/stores/bio-builder-store";
 import "../bio-builder.css";
@@ -16,7 +17,8 @@ export function BioBuilder() {
   const [leftPanelWidth, setLeftPanelWidth] = useState(280);
   const [rightPanelWidth, setRightPanelWidth] = useState(320);
   const [isElementsPanelVisible, setIsElementsPanelVisible] = useState(true);
-  const { selectedElement, isDragging } = useBioBuilderStore();
+  const { selectedElement, dragState } = useBioBuilderStore();
+  const { isDragging } = dragState;
 
   return (
     <DragDropContext>
@@ -63,6 +65,9 @@ export function BioBuilder() {
 
         {/* Componente de feedback visual durante o drag */}
         <DragFeedback />
+
+        {/* Enhanced drag operation status indicator */}
+        <DragOperationStatus />
 
         {/* Sistema de notificações */}
         <ToastContainer />

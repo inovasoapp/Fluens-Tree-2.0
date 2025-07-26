@@ -17,6 +17,44 @@ interface CanvasPosition {
   scale: number;
 }
 
+interface DragPerformanceMetrics {
+  calculationsPerSecond: number;
+  lastCalculationTime: number;
+  totalCalculations: number;
+  averageCalculationTime: number;
+  memoryUsage: number;
+  activeAnimations: number;
+}
+
+interface DragStateVersion {
+  version: number;
+  timestamp: number;
+  operationId: string;
+}
+
+interface EnhancedDragState {
+  isDragging: boolean;
+  draggedElement: BioElement | null;
+  draggedTemplate: ElementTemplate | null;
+  dragOverIndex: number | null;
+  insertionPosition: "top" | "bottom" | null;
+  temporaryElementOrder: string[] | null;
+  isTemporaryReorganization: boolean;
+
+  // Enhanced state management
+  dragStartTime: number | null;
+  dragOperationId: string | null;
+  lastUpdateTime: number;
+  stateVersion: DragStateVersion;
+
+  // Performance monitoring
+  performanceMetrics: DragPerformanceMetrics;
+
+  // Cleanup tracking
+  cleanupTimeout: NodeJS.Timeout | null;
+  abandonedOperations: Set<string>;
+}
+
 interface BioBuilderState {
   // Current page being edited
   currentPage: BioPage | null;
@@ -27,18 +65,8 @@ interface BioBuilderState {
   // Canvas position and zoom
   canvasPosition: CanvasPosition;
 
-  // Drag and drop state
-  isDragging: boolean;
-  draggedElement: BioElement | null;
-  draggedTemplate: ElementTemplate | null;
-
-  // Insertion indicator state
-  dragOverIndex: number | null;
-  insertionPosition: "top" | "bottom" | null;
-
-  // Temporary reorganization state for visual feedback during drag
-  temporaryElementOrder: string[] | null;
-  isTemporaryReorganization: boolean;
+  // Enhanced drag and drop state
+  dragState: EnhancedDragState;
 
   // Canvas drag state
   isCanvasDragging: boolean;
@@ -84,25 +112,48 @@ interface BioBuilderState {
   reorderElements: (fromIndex: number, toIndex: number) => void;
   moveElement: (elementId: string, newPosition: number) => void;
 
-  // Drag and drop
+  // Enhanced drag and drop management
+  startDragOperation: (item: BioElement | ElementTemplate) => string;
+  updateDragPosition: (
+    index: number | null,
+    position: "top" | "bottom" | null
+  ) => void;
+  endDragOperation: (operationId: string, success: boolean) => void;
+  cancelDragOperation: (operationId?: string) => void;
+
+  // Atomic state updates
+  atomicDragUpdate: (
+    updateFn: (state: EnhancedDragState) => Partial<EnhancedDragState>
+  ) => void;
+
+  // Enhanced temporary reorganization management
+  applyTemporaryReorganization: (
+    draggedId: string,
+    targetIndex: number,
+    operationId: string
+  ) => void;
+  revertTemporaryReorganization: (operationId?: string) => void;
+  getCurrentElementOrder: () => BioElement[];
+
+  // Performance monitoring
+  recordDragCalculation: (calculationTime: number) => void;
+  getDragPerformanceMetrics: () => DragPerformanceMetrics;
+  resetPerformanceMetrics: () => void;
+
+  // Cleanup management
+  scheduleCleanup: (operationId: string, delay?: number) => void;
+  cancelCleanup: (operationId: string) => void;
+  performCleanup: (operationId?: string) => void;
+
+  // Legacy compatibility methods (deprecated)
   setIsDragging: (isDragging: boolean) => void;
   setDraggedElement: (element: BioElement | null) => void;
   setDraggedTemplate: (template: ElementTemplate | null) => void;
-
-  // Insertion indicator management
   setDragOverIndex: (index: number | null) => void;
   setInsertionPosition: (position: "top" | "bottom" | null) => void;
   clearDragOverState: () => void;
-
-  // Temporary reorganization management
   setTemporaryOrder: (order: string[]) => void;
   clearTemporaryState: () => void;
-  applyTemporaryReorganization: (
-    draggedId: string,
-    targetIndex: number
-  ) => void;
-  revertTemporaryReorganization: () => void;
-  getCurrentElementOrder: () => BioElement[];
 
   // Page management
   updatePageTheme: (theme: Partial<BioPageTheme>) => void;
@@ -294,13 +345,33 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         y: 0,
         scale: 1,
       },
-      isDragging: false,
-      draggedElement: null,
-      draggedTemplate: null,
-      dragOverIndex: null,
-      insertionPosition: null,
-      temporaryElementOrder: null,
-      isTemporaryReorganization: false,
+      dragState: {
+        isDragging: false,
+        draggedElement: null,
+        draggedTemplate: null,
+        dragOverIndex: null,
+        insertionPosition: null,
+        temporaryElementOrder: null,
+        isTemporaryReorganization: false,
+        dragStartTime: null,
+        dragOperationId: null,
+        lastUpdateTime: Date.now(),
+        stateVersion: {
+          version: 0,
+          timestamp: Date.now(),
+          operationId: "",
+        },
+        performanceMetrics: {
+          calculationsPerSecond: 0,
+          lastCalculationTime: 0,
+          totalCalculations: 0,
+          averageCalculationTime: 0,
+          memoryUsage: 0,
+          activeAnimations: 0,
+        },
+        cleanupTimeout: null,
+        abandonedOperations: new Set(),
+      },
       isCanvasDragging: false,
       lastSaved: null,
       autoSaveEnabled: true,
@@ -841,34 +912,140 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         triggerAutoSave(get);
       },
 
-      setIsDragging: (isDragging) => set({ isDragging }),
-      setDraggedElement: (element) => set({ draggedElement: element }),
-      setDraggedTemplate: (template) => set({ draggedTemplate: template }),
+      // Enhanced drag operation management
+      startDragOperation: (item) => {
+        const operationId = `drag-${Date.now()}-${Math.random()
+          .toString(36)
+          .substring(2, 11)}`;
+        const now = Date.now();
 
-      // Insertion indicator management
-      setDragOverIndex: (index) => set({ dragOverIndex: index }),
-      setInsertionPosition: (position) => set({ insertionPosition: position }),
-      clearDragOverState: () =>
-        set({ dragOverIndex: null, insertionPosition: null }),
+        // Check if item has 'position' property to distinguish between BioElement and ElementTemplate
+        const isElement =
+          item && typeof item === "object" && "position" in item;
 
-      // Temporary reorganization management
-      setTemporaryOrder: (order) =>
-        set({
-          temporaryElementOrder: order,
-          isTemporaryReorganization: true,
-        }),
+        get().atomicDragUpdate((dragState) => ({
+          isDragging: true,
+          draggedElement: isElement ? (item as BioElement) : null,
+          draggedTemplate: !isElement ? (item as ElementTemplate) : null,
+          dragStartTime: now,
+          dragOperationId: operationId,
+          lastUpdateTime: now,
+          stateVersion: {
+            version: dragState.stateVersion.version + 1,
+            timestamp: now,
+            operationId,
+          },
+        }));
 
-      clearTemporaryState: () =>
-        set({
-          temporaryElementOrder: null,
-          isTemporaryReorganization: false,
+        // Schedule automatic cleanup for abandoned operations
+        get().scheduleCleanup(operationId, 30000); // 30 second timeout
+
+        return operationId;
+      },
+
+      updateDragPosition: (index, position) => {
+        const state = get();
+        if (!state.dragState.isDragging || !state.dragState.dragOperationId)
+          return;
+
+        const calculationStart = performance.now();
+
+        get().atomicDragUpdate((dragState) => ({
+          dragOverIndex: index,
+          insertionPosition: position,
+          lastUpdateTime: Date.now(),
+        }));
+
+        const calculationTime = performance.now() - calculationStart;
+        get().recordDragCalculation(calculationTime);
+      },
+
+      endDragOperation: (operationId, success) => {
+        const state = get();
+        if (state.dragState.dragOperationId !== operationId) {
+          console.warn(
+            `Attempted to end drag operation ${operationId} but current operation is ${state.dragState.dragOperationId}`
+          );
+          return;
+        }
+
+        get().cancelCleanup(operationId);
+
+        if (!success) {
+          get().revertTemporaryReorganization(operationId);
+        }
+
+        get().atomicDragUpdate(() => ({
+          isDragging: false,
+          draggedElement: null,
+          draggedTemplate: null,
           dragOverIndex: null,
           insertionPosition: null,
-        }),
+          temporaryElementOrder: null,
+          isTemporaryReorganization: false,
+          dragStartTime: null,
+          dragOperationId: null,
+          lastUpdateTime: Date.now(),
+        }));
+      },
 
-      applyTemporaryReorganization: (draggedId, targetIndex) => {
+      cancelDragOperation: (operationId) => {
         const state = get();
-        if (!state.currentPage) return;
+        const currentOperationId =
+          operationId || state.dragState.dragOperationId;
+
+        if (currentOperationId) {
+          get().cancelCleanup(currentOperationId);
+          get().revertTemporaryReorganization(currentOperationId);
+        }
+
+        get().atomicDragUpdate(() => ({
+          isDragging: false,
+          draggedElement: null,
+          draggedTemplate: null,
+          dragOverIndex: null,
+          insertionPosition: null,
+          temporaryElementOrder: null,
+          isTemporaryReorganization: false,
+          dragStartTime: null,
+          dragOperationId: null,
+          lastUpdateTime: Date.now(),
+        }));
+      },
+
+      // Atomic state updates to prevent race conditions
+      atomicDragUpdate: (updateFn) => {
+        const state = get();
+        const currentDragState = state.dragState;
+        const updates = updateFn(currentDragState);
+
+        // Create new state version
+        const newVersion = {
+          version: currentDragState.stateVersion.version + 1,
+          timestamp: Date.now(),
+          operationId:
+            updates.dragOperationId || currentDragState.dragOperationId || "",
+        };
+
+        set({
+          dragState: {
+            ...currentDragState,
+            ...updates,
+            stateVersion: newVersion,
+          },
+        });
+      },
+
+      // Enhanced temporary reorganization management
+      applyTemporaryReorganization: (draggedId, targetIndex, operationId) => {
+        const state = get();
+        if (
+          !state.currentPage ||
+          state.dragState.dragOperationId !== operationId
+        )
+          return;
+
+        const calculationStart = performance.now();
 
         const elements = [...state.currentPage.elements];
         const draggedIndex = elements.findIndex((el) => el.id === draggedId);
@@ -881,20 +1058,29 @@ export const useBioBuilderStore = create<BioBuilderState>()(
 
         const temporaryOrder = elements.map((el) => el.id);
 
-        set({
+        get().atomicDragUpdate(() => ({
           temporaryElementOrder: temporaryOrder,
           isTemporaryReorganization: true,
-        });
+          lastUpdateTime: Date.now(),
+        }));
+
+        const calculationTime = performance.now() - calculationStart;
+        get().recordDragCalculation(calculationTime);
       },
 
-      revertTemporaryReorganization: () => {
+      revertTemporaryReorganization: (operationId) => {
         const state = get();
-        if (!state.isTemporaryReorganization) return;
+        if (!state.dragState.isTemporaryReorganization) return;
 
-        set({
+        // Only revert if the operation ID matches or no operation ID is provided
+        if (operationId && state.dragState.dragOperationId !== operationId)
+          return;
+
+        get().atomicDragUpdate(() => ({
           temporaryElementOrder: null,
           isTemporaryReorganization: false,
-        });
+          lastUpdateTime: Date.now(),
+        }));
       },
 
       getCurrentElementOrder: () => {
@@ -902,12 +1088,15 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         if (!state.currentPage) return [];
 
         // If we have a temporary order during drag, use that for visual display
-        if (state.isTemporaryReorganization && state.temporaryElementOrder) {
+        if (
+          state.dragState.isTemporaryReorganization &&
+          state.dragState.temporaryElementOrder
+        ) {
           const elementMap = new Map(
             state.currentPage.elements.map((el) => [el.id, el])
           );
 
-          return state.temporaryElementOrder
+          return state.dragState.temporaryElementOrder
             .map((id) => elementMap.get(id))
             .filter((el): el is BioElement => el !== undefined);
         }
@@ -916,6 +1105,187 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         return [...state.currentPage.elements].sort(
           (a, b) => a.position - b.position
         );
+      },
+
+      // Performance monitoring
+      recordDragCalculation: (calculationTime) => {
+        const state = get();
+        const metrics = state.dragState.performanceMetrics;
+        const now = Date.now();
+
+        const newTotalCalculations = metrics.totalCalculations + 1;
+        const newAverageTime =
+          (metrics.averageCalculationTime * metrics.totalCalculations +
+            calculationTime) /
+          newTotalCalculations;
+
+        // Calculate calculations per second (over last 1000ms)
+        const timeSinceLastCalculation = now - metrics.lastCalculationTime;
+        const calculationsPerSecond =
+          timeSinceLastCalculation > 0 ? 1000 / timeSinceLastCalculation : 0;
+
+        get().atomicDragUpdate((dragState) => ({
+          performanceMetrics: {
+            ...metrics,
+            calculationsPerSecond: Math.min(calculationsPerSecond, 60), // Cap at 60fps
+            lastCalculationTime: now,
+            totalCalculations: newTotalCalculations,
+            averageCalculationTime: newAverageTime,
+            memoryUsage:
+              (typeof performance !== "undefined" &&
+                (performance as any).memory?.usedJSHeapSize) ||
+              0,
+          },
+        }));
+      },
+
+      getDragPerformanceMetrics: () => {
+        return get().dragState.performanceMetrics;
+      },
+
+      resetPerformanceMetrics: () => {
+        get().atomicDragUpdate(() => ({
+          performanceMetrics: {
+            calculationsPerSecond: 0,
+            lastCalculationTime: 0,
+            totalCalculations: 0,
+            averageCalculationTime: 0,
+            memoryUsage: 0,
+            activeAnimations: 0,
+          },
+        }));
+      },
+
+      // Cleanup management
+      scheduleCleanup: (operationId, delay = 5000) => {
+        const state = get();
+
+        // Cancel existing cleanup for this operation
+        get().cancelCleanup(operationId);
+
+        const cleanupTimeout = setTimeout(() => {
+          const currentState = get();
+          if (currentState.dragState.dragOperationId === operationId) {
+            console.warn(
+              `Cleaning up abandoned drag operation: ${operationId}`
+            );
+            get().cancelDragOperation(operationId);
+
+            // Track abandoned operation
+            get().atomicDragUpdate((dragState) => ({
+              abandonedOperations: new Set([
+                ...dragState.abandonedOperations,
+                operationId,
+              ]),
+            }));
+          }
+        }, delay);
+
+        get().atomicDragUpdate(() => ({
+          cleanupTimeout,
+        }));
+      },
+
+      cancelCleanup: (operationId) => {
+        const state = get();
+        if (state.dragState.cleanupTimeout) {
+          clearTimeout(state.dragState.cleanupTimeout);
+          get().atomicDragUpdate(() => ({
+            cleanupTimeout: null,
+          }));
+        }
+      },
+
+      performCleanup: (operationId) => {
+        const state = get();
+        const targetOperationId =
+          operationId || state.dragState.dragOperationId;
+
+        if (targetOperationId) {
+          get().cancelCleanup(targetOperationId);
+          get().cancelDragOperation(targetOperationId);
+        }
+
+        // Clean up abandoned operations set if it gets too large
+        get().atomicDragUpdate((dragState) => {
+          const abandonedOps = dragState.abandonedOperations;
+          if (abandonedOps.size > 10) {
+            // Keep only the 5 most recent abandoned operations
+            const recentOps = Array.from(abandonedOps).slice(-5);
+            return {
+              abandonedOperations: new Set(recentOps),
+            };
+          }
+          return {};
+        });
+      },
+
+      // Legacy compatibility methods (deprecated but maintained for backward compatibility)
+      setIsDragging: (isDragging) => {
+        console.warn(
+          "setIsDragging is deprecated. Use startDragOperation/endDragOperation instead."
+        );
+        get().atomicDragUpdate(() => ({ isDragging }));
+      },
+
+      setDraggedElement: (element) => {
+        console.warn(
+          "setDraggedElement is deprecated. Use startDragOperation instead."
+        );
+        get().atomicDragUpdate(() => ({ draggedElement: element }));
+      },
+
+      setDraggedTemplate: (template) => {
+        console.warn(
+          "setDraggedTemplate is deprecated. Use startDragOperation instead."
+        );
+        get().atomicDragUpdate(() => ({ draggedTemplate: template }));
+      },
+
+      setDragOverIndex: (index) => {
+        console.warn(
+          "setDragOverIndex is deprecated. Use updateDragPosition instead."
+        );
+        get().atomicDragUpdate(() => ({ dragOverIndex: index }));
+      },
+
+      setInsertionPosition: (position) => {
+        console.warn(
+          "setInsertionPosition is deprecated. Use updateDragPosition instead."
+        );
+        get().atomicDragUpdate(() => ({ insertionPosition: position }));
+      },
+
+      clearDragOverState: () => {
+        console.warn(
+          "clearDragOverState is deprecated. Use endDragOperation instead."
+        );
+        get().atomicDragUpdate(() => ({
+          dragOverIndex: null,
+          insertionPosition: null,
+        }));
+      },
+
+      setTemporaryOrder: (order) => {
+        console.warn(
+          "setTemporaryOrder is deprecated. Use applyTemporaryReorganization instead."
+        );
+        get().atomicDragUpdate(() => ({
+          temporaryElementOrder: order,
+          isTemporaryReorganization: true,
+        }));
+      },
+
+      clearTemporaryState: () => {
+        console.warn(
+          "clearTemporaryState is deprecated. Use revertTemporaryReorganization instead."
+        );
+        get().atomicDragUpdate(() => ({
+          temporaryElementOrder: null,
+          isTemporaryReorganization: false,
+          dragOverIndex: null,
+          insertionPosition: null,
+        }));
       },
 
       updatePageTheme: (theme) => {
@@ -1466,6 +1836,7 @@ export const useBioBuilderStore = create<BioBuilderState>()(
         currentPage: state.currentPage,
         lastSaved: state.lastSaved,
         autoSaveEnabled: state.autoSaveEnabled,
+        // Don't persist drag state as it's transient
       }),
       // Custom storage with Date handling
       storage: createJSONStorage(() => ({
@@ -1505,6 +1876,15 @@ export const useBioBuilderStore = create<BioBuilderState>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.restoreFromStorage();
+
+          // Clean up any leftover drag state on hydration
+          if (state.dragState.isDragging || state.dragState.cleanupTimeout) {
+            console.log("Cleaning up drag state on hydration");
+            state.performCleanup();
+          }
+
+          // Reset performance metrics on hydration
+          state.resetPerformanceMetrics();
         }
       },
     }

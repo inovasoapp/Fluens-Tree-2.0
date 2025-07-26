@@ -10,13 +10,14 @@ type DragState =
   | "reordering";
 
 export function DragFeedback() {
+  const { dragState: storeDragState } = useBioBuilderStore();
   const {
     isDragging,
     draggedTemplate,
     draggedElement,
     dragOverIndex,
     insertionPosition,
-  } = useBioBuilderStore();
+  } = storeDragState;
 
   const [dragState, setDragState] = useState<DragState>("dragging");
   const [isVisible, setIsVisible] = useState(false);

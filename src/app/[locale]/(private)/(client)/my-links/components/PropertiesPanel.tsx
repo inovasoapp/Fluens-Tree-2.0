@@ -24,8 +24,10 @@ export function PropertiesPanel() {
     updateElement,
     deleteElement,
     setSelectedElement,
-    isDragging,
+    dragState,
   } = useBioBuilderStore();
+
+  const { isDragging } = dragState;
 
   const handleUpdate = (field: string, value: any) => {
     if (!selectedElement) return;

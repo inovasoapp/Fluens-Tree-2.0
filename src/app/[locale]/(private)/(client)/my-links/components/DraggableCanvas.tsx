@@ -13,9 +13,11 @@ export function DraggableCanvas({ children }: DraggableCanvasProps) {
     setCanvasPosition,
     isCanvasDragging,
     setIsCanvasDragging,
-    isDragging, // Element drag state
+    dragState,
     centerCanvas,
   } = useBioBuilderStore();
+
+  const { isDragging } = dragState; // Element drag state
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
