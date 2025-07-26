@@ -120,10 +120,10 @@ export function DropZone({ children }: DropZoneProps) {
           <div className="absolute inset-0 border-2 border-dashed border-blue-300/60 dark:border-blue-600/60 rounded-lg" />
 
           {/* Corner indicators */}
-          <div className="absolute top-2 left-2 w-3 h-3 border-l-2 border-t-2 border-blue-400 dark:border-blue-500 rounded-tl" />
-          <div className="absolute top-2 right-2 w-3 h-3 border-r-2 border-t-2 border-blue-400 dark:border-blue-500 rounded-tr" />
-          <div className="absolute bottom-2 left-2 w-3 h-3 border-l-2 border-b-2 border-blue-400 dark:border-blue-500 rounded-bl" />
-          <div className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2 border-blue-400 dark:border-blue-500 rounded-br" />
+          <div className="absolute top-5 left-5 w-3 h-3 border-l-2 border-t-2 border-blue-400 dark:border-blue-500 rounded-tl" />
+          <div className="absolute top-5 right-5 w-3 h-3 border-r-2 border-t-2 border-blue-400 dark:border-blue-500 rounded-tr" />
+          <div className="absolute bottom-5 left-5 w-3 h-3 border-l-2 border-b-2 border-blue-400 dark:border-blue-500 rounded-bl" />
+          <div className="absolute bottom-5 right-5 w-3 h-3 border-r-2 border-b-2 border-blue-400 dark:border-blue-500 rounded-br" />
         </div>
       )}
 

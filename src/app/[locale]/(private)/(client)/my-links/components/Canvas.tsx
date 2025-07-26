@@ -184,7 +184,7 @@ export function Canvas() {
                 {/* Content Layer */}
                 <div className="relative w-full h-full">
                   {/* Status Bar */}
-                  <div className="absolute top-0 left-0 right-0 h-11 bg-black/5 flex items-center justify-between px-6 text-sm font-medium z-10">
+                  <div className="absolute top-0 left-0 right-0 h-11 bg-black/5 flex items-center justify-between px-6 text-sm font-medium z-0">
                     <span className="text-black/70">9:41</span>
                     <div className="flex items-center space-x-1">
                       <div className="w-4 h-2 bg-black/30 rounded-sm"></div>
@@ -194,10 +194,10 @@ export function Canvas() {
                   </div>
 
                   {/* Content Area */}
-                  <ScrollArea className="h-full pt-11 custom-scrollbar">
+                  <ScrollArea className="h-full custom-scrollbar">
                     <DropZone>
                       <div
-                        className="p-4 space-y-2 min-h-full"
+                        className="p-4 space-y-2 min-h-full h-[790px] rounded-[80px]"
                         onClick={(e) => {
                           // Check if the click was directly on this div (not on a child element)
                           if (e.target === e.currentTarget) {
